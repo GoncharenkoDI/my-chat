@@ -1,0 +1,9 @@
+const dbConfig = {
+  user: 'postgres',
+  host: 'localhost',
+  database: 'vue-chat',
+  password: '221290',
+  port: 5432,
+};
+
+module.exports = dbConfig;
