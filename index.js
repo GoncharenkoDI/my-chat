@@ -115,6 +115,12 @@ io.on('connect', async (socket) => {
   );
 
   activeSockets.set(socket.id, { socket, user });
+  if (!activeUsers.has(user.id)) {
+    activeUsers.set(user.id, []);
+  }
+
+  const sockets = activeUsers.get(user.id);
+  sockets.push(socket.id);
 
   const rooms = await getUserRooms(user.id);
 
@@ -134,15 +140,45 @@ io.on('connect', async (socket) => {
     }
     const roomId = roomUsers[0].room_id;
     const members = roomUsers.map((roomUser) => roomUser.member);
-    // пройтись по activeSockets если не тот сок
+    for (const member of members) {
+      const sendRooms = roomUsers.filter((ru) => ru.member !== member);
+      if (activeUsers.has(member)) {
+        const sockets = activeUsers.get(member);
+        for (const s of sockets) {
+          if (s === socket.id) {
+            // ініціатор створення переходить в створену кімнату
+            socket.emit('new chat', sendRooms, true);
+          } else {
+            // просто додається в перелік кімнат
+            socket.emit('new chat', sendRooms, false);
+          }
+        }
+      }
+    }
 
-    socket.to(roomId).emit('new chat', roomUsers, false);
+    //socket.to(roomId).emit('new chat', roomUsers, false);
     socket.emit('new chat', roomUsers, true);
   });
+
   socket.on('disconnect', (reason) => {
     console.log(` З'єднання закрито sid ${socket.id} Причина - ${reason}.`);
-    activeSockets.delete(socket.id);
+    if (activeSockets.has(socket.id)) {
+      const { user } = activeSockets.get(socket.id);
+      activeSockets.delete(socket.id);
+
+      if (activeUsers.has(user.id)) {
+        let sockets = activeUsers.get(user.id);
+        sockets = sockets.filter((s) => s !== socket.id);
+        if (sockets.length === 0) {
+          activeUsers.delete(user.id);
+        } else {
+          activeUsers.set(user.id, sockets);
+        }
+      }
+    }
+    console.dir({ activeSockets, activeUsers });
   });
+
   let activeRoom;
   socket.on('join', async (roomId, callback) => {
     const rooms = socket.rooms;
