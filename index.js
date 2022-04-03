@@ -143,15 +143,16 @@ io.on('connect', async (socket) => {
     const members = roomUsers.map((roomUser) => roomUser.member);
     for (const member of members) {
       const sendRoom = roomUsers.find((ru) => ru.member === member);
+      const contact = members.find((m) => m !== members);
       if (activeUsers.has(member)) {
         const sockets = activeUsers.get(member);
         for (const s of sockets) {
           if (s === socket.id) {
             // ініціатор створення переходить в створену кімнату
-            socket.emit('new chat', sendRoom, true);
+            socket.emit('new chat', sendRoom, true, contact);
           } else {
             // просто додається в перелік кімнат
-            io.in(s).emit('new chat', sendRoom, false);
+            io.in(s).emit('new chat', sendRoom, false, contact);
           }
         }
       }

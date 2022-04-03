@@ -33,6 +33,9 @@ export default {
       if (this.contact) {
         this.$store.dispatch('newChat', this.contact.id);
       }
+      this.$router.push({
+        path: '/'
+      });
     }
   },
   components: {}

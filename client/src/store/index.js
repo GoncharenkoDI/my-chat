@@ -43,6 +43,9 @@ export default new Vuex.Store({
     setRooms(state, rooms) {
       state.rooms = rooms;
     },
+    addRoom(state, room) {
+      state.rooms.push(room);
+    },
     setSocket(state, socket) {
       state.socket = socket;
     },
@@ -64,6 +67,9 @@ export default new Vuex.Store({
     setContacts(state, contacts) {
       state.contacts = contacts;
     },
+    removeContact(state, contactId) {
+      state.contacts = state.contacts.filter(c => c.id !== contactId);
+    },
     /**
      *
      * @param {*} state
@@ -80,7 +86,7 @@ export default new Vuex.Store({
     // }
   },
   actions: {
-    newConnection({ state, commit }) {
+    newConnection({ state, commit, dispatch }) {
       const socket = io(window.location.href, { transports: ['websocket'] });
       console.log('windows location = ', window.location.href);
       socket.on('connect', async () => {
@@ -117,8 +123,13 @@ export default new Vuex.Store({
           console.dir(message);
           commit('addMessage', message);
         });
-        socket.on('new chat', (sendRooms, isOwner) => {
-          console.dir({ name: 'on new chat', sendRooms, isOwner });
+        socket.on('new chat', (sendRoom, isOwner, contact) => {
+          console.dir({ sendRoom, isOwner, contact });
+          commit('addRoom', sendRoom);
+          commit('removeContact', contact);
+          if (isOwner) {
+            dispatch('changeRoom', sendRoom.room_id);
+          }
         });
       });
       socket.on('connect_error', error => {
