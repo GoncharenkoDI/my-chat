@@ -54,6 +54,7 @@ class Room extends Model {
    * @returns { Promise<string> } створена кімната
    */
   async newRoom(members, roomState = 0, roomType = 0) {
+    console.log('Room newRoom');
     try {
       // створити запис в таблиці rooms
       // створити записи в таблиці room_users - модель
@@ -63,15 +64,18 @@ class Room extends Model {
       }
 
       await this.client.query('BEGIN');
-      const sql = `INSERT INTO public.rooms ( state, room_type ) 
-         VALUES ($1, $2) 
-         RETURNING id`;
+      const sql =
+        'INSERT INTO public.rooms ( state, room_type )' +
+        ' VALUES ($1, $2)' +
+        ' RETURNING id';
+      console.dir({ roomState, roomType, sql });
       const { rows } = await this.query(sql, [roomState, roomType]);
       if (rows.length === 0) {
         throw new Error('Помилка створення запису в таблиці public.rooms');
       }
       const roomId = rows[0].id;
       members.forEach(async (member) => {
+        console.dir({ roomId, member });
         await this.insert({
           room_id: roomId,
           member: member.id,

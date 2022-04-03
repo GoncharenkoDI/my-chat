@@ -53,6 +53,7 @@ class RoomService {
    * @returns { Promise<string> } створена кімната
    */
   async newRoom(members, roomState = 0, roomType = 0) {
+    console.dir({ members });
     try {
       const roomId = await this.model.newRoom(members, roomState, roomType);
       if (!roomId) {

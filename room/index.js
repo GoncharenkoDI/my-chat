@@ -30,8 +30,10 @@ async function getUserRooms(userId) {
  * created_at:Date, modified_at:Date}] | []>}
  */
 async function createPrivateChat(memberId, owner) {
+  console.log('createPrivateChat');
   let roomService;
   try {
+    console.log('createPrivateChat');
     roomService = await RoomService.createRoomService();
     const sql = `select 
         id, login, user_name, state, created_at, modified_at 
@@ -44,7 +46,7 @@ async function createPrivateChat(memberId, owner) {
     }
     const user = rows[0];
     const member = { id: user.id, name: owner.user_name };
-    const members = [member, owner];
+    const members = [member, { id: owner.id, name: user.user_name }];
     const roomId = await roomService.newRoom(members, 0, 0);
     const rooms = await roomService.findUserRoomsById(roomId);
     return rooms;

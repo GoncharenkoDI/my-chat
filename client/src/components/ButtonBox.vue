@@ -4,7 +4,11 @@
     <div class="message-list" ref="messages">
       <div class="messages-wraper">
         <div class="buttons">
-          <my-button icon-name="handshake" class="btn" />
+          <my-button
+            icon-name="handshake"
+            class="btn"
+            @click.native="newChat"
+          />
         </div>
       </div>
     </div>
@@ -17,10 +21,20 @@ export default {
   data: function() {
     return {};
   },
-  computed: {},
+  computed: {
+    contact() {
+      return this.$store.state.contact;
+    }
+  },
   mounted() {},
   updated() {},
-  methods: {},
+  methods: {
+    newChat() {
+      if (this.contact) {
+        this.$store.dispatch('newChat', this.contact.id);
+      }
+    }
+  },
   components: {}
 };
 </script>

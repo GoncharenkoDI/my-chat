@@ -117,6 +117,9 @@ export default new Vuex.Store({
           console.dir(message);
           commit('addMessage', message);
         });
+        socket.on('new chat', (sendRooms, isOwner) => {
+          console.dir({ name: 'on new chat', sendRooms, isOwner });
+        });
       });
       socket.on('connect_error', error => {
         console.log(`Відбулась помилка з\'єднання: ${error.message}!`);
@@ -173,6 +176,10 @@ export default new Vuex.Store({
     getContacts({ state }, userId) {
       const socket = state.socket;
       socket.emit('contacts', userId);
+    },
+    newChat({ state }, memberId) {
+      const socket = state.socket;
+      socket.emit('new chat', memberId);
     }
   },
   modules: {

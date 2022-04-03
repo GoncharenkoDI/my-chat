@@ -79,9 +79,13 @@ class Model {
   async insert(columns, returning = []) {
     const columnsName = Object.keys(columns);
     const values = Object.values(columns);
-    const sql = `INSERT INTO ${this.table} (${columnsName.join()})
-        VALUES (${columnsName.map((c, i) => '$' + (i + 1)).join()})
-        RETURNING ${returning.join()}`;
+    let sql =
+      `INSERT INTO ${this.table} (${columnsName.join()})` +
+      ` VALUES (${columnsName.map((c, i) => '$' + (i + 1)).join()})`;
+    if (returning.length !== 0) {
+      sql += ` RETURNING ${returning.join()}`;
+    }
+    console.dir({ title: 'insert', sql, values });
     const { rows } = await this.client.query(sql, values);
     return rows[0];
   }

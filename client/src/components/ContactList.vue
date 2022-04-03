@@ -1,7 +1,7 @@
 <template>
   <div class="left-side" :class="{ active: isActive }">
     <my-tool-bar>
-      <my-button icon-name="address-card" class="btn" />
+      <my-button icon-name="address-card" class="btn" @click.native="goHome" />
       <my-input placeholder="Пошук" layout="inline" />
     </my-tool-bar>
     <div class="contact-list">
@@ -39,6 +39,11 @@ export default {
     },
     setActiveContact(id) {
       this.$store.dispatch('setActiveContact', id);
+    },
+    goHome() {
+      this.$router.push({
+        path: '/'
+      });
     }
   },
   components: {}

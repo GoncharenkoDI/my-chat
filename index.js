@@ -133,31 +133,29 @@ io.on('connect', async (socket) => {
   });
 
   socket.on('new chat', async (memberId) => {
+    console.log(`new chat execute with memberId = ${memberId}`);
     const roomUsers = await createPrivateChat(memberId, user);
     if (roomUsers.length === 0) {
       console.log('Не вийшло створити новий чат');
       return;
     }
-    const roomId = roomUsers[0].room_id;
+    //const roomId = roomUsers[0].room_id;
     const members = roomUsers.map((roomUser) => roomUser.member);
     for (const member of members) {
-      const sendRooms = roomUsers.filter((ru) => ru.member !== member);
+      const sendRoom = roomUsers.find((ru) => ru.member === member);
       if (activeUsers.has(member)) {
         const sockets = activeUsers.get(member);
         for (const s of sockets) {
           if (s === socket.id) {
             // ініціатор створення переходить в створену кімнату
-            socket.emit('new chat', sendRooms, true);
+            socket.emit('new chat', sendRoom, true);
           } else {
             // просто додається в перелік кімнат
-            socket.emit('new chat', sendRooms, false);
+            io.in(s).emit('new chat', sendRoom, false);
           }
         }
       }
     }
-
-    //socket.to(roomId).emit('new chat', roomUsers, false);
-    socket.emit('new chat', roomUsers, true);
   });
 
   socket.on('disconnect', (reason) => {
