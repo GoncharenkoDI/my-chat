@@ -3,3 +3,9 @@ package-lock.json
 client/package-lock.json
 config/*.config.js
 .vscode
+.editorconfig
+.eslintrc.js
+.eslintrc.json
+.prettierrc.js
+.prettierrc.json
+jsconfig.json
