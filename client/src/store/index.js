@@ -20,7 +20,7 @@ export default new Vuex.Store({
     socket: null,
     messages: [],
     contacts: [],
-    connectionError: null
+    connectionError: null,
   },
   mutations: {
     setUser(state, user) {
@@ -68,7 +68,9 @@ export default new Vuex.Store({
       state.contacts = contacts;
     },
     removeContact(state, contactId) {
-      state.contacts = state.contacts.filter(c => c.id !== contactId);
+      console.dir({ contacts: state.contacts, contactId });
+      state.contacts = state.contacts.filter(c => +c.id !== +contactId);
+      console.log(state.contacts);
     },
     /**
      *
@@ -78,7 +80,7 @@ export default new Vuex.Store({
      */
     setContact(state, contact) {
       state.contact = contact;
-    }
+    },
   },
   getters: {
     // getUserRooms(state) {
@@ -177,7 +179,7 @@ export default new Vuex.Store({
       socket.emit('message', {
         author: user.id,
         destination: room.room_id,
-        text
+        text,
       });
     },
     setActiveContact({ commit, state }, contactId) {
@@ -191,10 +193,10 @@ export default new Vuex.Store({
     newChat({ state }, memberId) {
       const socket = state.socket;
       socket.emit('new chat', memberId);
-    }
+    },
   },
   modules: {
     http,
-    auth
-  }
+    auth,
+  },
 });

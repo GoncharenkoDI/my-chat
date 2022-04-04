@@ -2,7 +2,7 @@
   <div class="chat-box">
     <my-tool-bar> <p>toolbar</p> </my-tool-bar>
     <div class="message-list" ref="messages">
-      <div class="messages-wraper">
+      <div class="messages-wrapper">
         <div class="buttons">
           <my-button
             icon-name="handshake"
@@ -68,7 +68,7 @@ export default {
   color: #fff;
   border: 1px solid #fff;
 }
-.messages-wraper {
+.messages-wrapper {
   height: auto;
   padding: 1.5rem 0;
   display: flex;

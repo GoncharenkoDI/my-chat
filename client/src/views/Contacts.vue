@@ -1,5 +1,5 @@
 <template>
-  <div class="wraper">
+  <div class="wrapper">
     <div class="navbar">
       <div>
         <my-button
@@ -8,6 +8,7 @@
           @click.native="changeLeftActive"
         />
       </div>
+      <p class="user-info"> Користувач: {{ userName }}</p>
       <div>
         <my-button icon-name="user" class="btn" @click.native="logout" />
       </div>
@@ -42,6 +43,10 @@ export default {
     },
     user() {
       return this.$store.state.user;
+    },
+    userName() {
+      const user = this.$store.state.user ? this.$store.state.user : {};
+      return user.user_name ? user.user_name : '';
     }
   },
   watch: {
@@ -86,5 +91,8 @@ export default {
 .btn:hover {
   color: #fff;
   border: 1px solid #fff;
+}
+.user-info{
+  color: #fff;
 }
 </style>

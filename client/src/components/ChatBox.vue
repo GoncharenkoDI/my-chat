@@ -2,7 +2,7 @@
   <div class="chat-box">
     <my-tool-bar> <p>toolbar</p> </my-tool-bar>
     <div class="message-list" ref="messages">
-      <div class="messages-wraper">
+      <div class="messages-wrapper">
         <Message
           v-for="message in messages"
           :key="message.id"
@@ -115,7 +115,7 @@ export default {
   height: 100%;
   width: 100%;
 }
-.messages-wraper {
+.messages-wrapper {
   height: auto;
   padding: 1.5rem 0;
 }
