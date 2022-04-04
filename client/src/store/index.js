@@ -173,7 +173,7 @@ export default new Vuex.Store({
       }
       const user = state.user;
       if (!room) {
-        console.log('Ви не ввійли до програми');
+        console.log('Ви не ввійшли до програми');
         return;
       }
       socket.emit('message', {

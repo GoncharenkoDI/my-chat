@@ -84,10 +84,10 @@ io.use(wrap(authentication));
 
 io.use((socket, next) => {
   if (socket.request.user) {
-    console.log('авторизировался');
+    console.log('авторизувався');
     next();
   } else {
-    console.log('не авторизировался');
+    console.log('не авторизувався');
     console.dir(socket.request.session);
     next(new Error('unauthorized'));
   }
@@ -112,7 +112,7 @@ io.on('connect', async socket => {
   }
 
   console.log(
-    `З\'єднання з sid ${socket.id} та користувачем з id ${user.id} записуємо в activeSockets`
+    `З'єднання з sid ${socket.id} та користувачем з id ${user.id} записуємо в activeSockets`
   );
 
   activeSockets.set(socket.id, { socket, user });
@@ -189,7 +189,7 @@ io.on('connect', async socket => {
       if (room !== socket.id) {
         socket.leave(room);
         console.log(
-          `користувач з id = ${user.id} вивйшов з кімнати з id = ${room}.`
+          `користувач з id = ${user.id} вийшов з кімнати з id = ${room}.`
         );
       }
     });
@@ -223,8 +223,8 @@ io.on('connect', async socket => {
         return;
       }
       if (newMessage.author !== user.id) {
-        console.log('Відправник не віддповідае поточному користувачу.');
-        console.dir({ userId: user.id, newMessageAutthor: newMessage.author });
+        console.log('Відправник не відповідає поточному користувачу.');
+        console.dir({ userId: user.id, newMessageAuthor: newMessage.author });
         console.dir(newMessage);
         console.dir(message);
         console.dir(user);
@@ -233,9 +233,7 @@ io.on('connect', async socket => {
       }
       newMessage.user_name = user.user_name;
       if (newMessage.destination !== activeRoom) {
-        console.log(
-          'Призначення повідомлення не віддповідае активній кімнаті.'
-        );
+        console.log('Призначення повідомлення не відповідає активній кімнаті.');
         console.dir(message);
         console.dir(newMessage);
         console.dir(user);
@@ -246,7 +244,7 @@ io.on('connect', async socket => {
     } catch (error) {
       console.dir(error);
       console.dir(message);
-      console.dir(newMessage);
+      //console.dir(newMessage);
       console.dir(user);
       console.dir({ activeRoom });
     }
