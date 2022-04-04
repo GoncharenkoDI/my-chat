@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS public.room_users
     CONSTRAINT rooms_member_fkey FOREIGN KEY (member)
         REFERENCES public.users (id) MATCH SIMPLE
         ON UPDATE CASCADE
-        ON DELETE RESTRICT,
+        ON DELETE CASCADE,
     CONSTRAINT rooms_rooms_fkey FOREIGN KEY (room_id)
         REFERENCES public.rooms (id) MATCH SIMPLE
         ON UPDATE CASCADE
@@ -167,8 +167,8 @@ CREATE TABLE IF NOT EXISTS public.messages
     CONSTRAINT messages_pkey PRIMARY KEY (id),
     CONSTRAINT author_in_room_fkey FOREIGN KEY (author, destination)
         REFERENCES public.room_users (member, room_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
         NOT VALID,
     CONSTRAINT messages_author_fkey FOREIGN KEY (author)
         REFERENCES public.users (id) MATCH SIMPLE
@@ -177,8 +177,8 @@ CREATE TABLE IF NOT EXISTS public.messages
         NOT VALID,
     CONSTRAINT messages_destination_fkey FOREIGN KEY (destination)
         REFERENCES public.rooms (id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
         NOT VALID
 )
 
