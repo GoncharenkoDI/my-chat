@@ -74,7 +74,7 @@ app.post('/api/logout', (req, res) => {
 });
 
 //convert a connect middleware to a Socket.IO middleware
-const wrap = middleware => (socket, next) => {
+const wrap = (middleware) => (socket, next) => {
   console.log('middleware.name - ', middleware.name);
   return middleware(socket.request, {}, next);
 };
@@ -93,7 +93,7 @@ io.use((socket, next) => {
   }
 });
 
-io.on('connect', async socket => {
+io.on('connect', async (socket) => {
   console.log(`new connection ${socket.id}`);
 
   const session = socket.request.session;
@@ -128,12 +128,12 @@ io.on('connect', async socket => {
   socket.emit('send rooms', rooms);
   socket.emit('i am is', user);
 
-  socket.on('get rooms', async callback => {
+  socket.on('get rooms', async (callback) => {
     const rooms = await getUserRooms(user.id);
     callback(rooms);
   });
 
-  socket.on('new chat', async memberId => {
+  socket.on('new chat', async (memberId) => {
     console.log(`new chat execute with memberId = ${memberId}`);
     const roomUsers = await createPrivateChat(memberId, user);
     console.dir(roomUsers);
@@ -142,12 +142,13 @@ io.on('connect', async socket => {
       return;
     }
     //const roomId = roomUsers[0].room_id;
-    const members = roomUsers.map(roomUser => roomUser.member);
+    const members = roomUsers.map((roomUser) => roomUser.member);
     for (const member of members) {
-      const sendRoom = roomUsers.find(ru => ru.member === member);
+      const sendRoom = roomUsers.find((ru) => ru.member === member);
       const contacts = roomUsers
-        .filter(ru => ru !== member)
-        .map(ru => ru.member);
+        .map((ru) => ru.member)
+        .filter((m) => m !== member);
+      console.dir({ sendRoom, contacts });
       if (activeUsers.has(member)) {
         const sockets = activeUsers.get(member);
         for (const s of sockets) {
@@ -163,7 +164,7 @@ io.on('connect', async socket => {
     }
   });
 
-  socket.on('disconnect', reason => {
+  socket.on('disconnect', (reason) => {
     console.log(` З'єднання закрито sid ${socket.id} Причина - ${reason}.`);
     if (activeSockets.has(socket.id)) {
       const { user } = activeSockets.get(socket.id);
@@ -171,7 +172,7 @@ io.on('connect', async socket => {
 
       if (activeUsers.has(user.id)) {
         let sockets = activeUsers.get(user.id);
-        sockets = sockets.filter(s => s !== socket.id);
+        sockets = sockets.filter((s) => s !== socket.id);
         if (sockets.length === 0) {
           activeUsers.delete(user.id);
         } else {
@@ -185,7 +186,7 @@ io.on('connect', async socket => {
   let activeRoom;
   socket.on('join', async (roomId, callback) => {
     const rooms = socket.rooms;
-    rooms.forEach(room => {
+    rooms.forEach((room) => {
       if (room !== socket.id) {
         socket.leave(room);
         console.log(
@@ -202,17 +203,17 @@ io.on('connect', async socket => {
     callback(messages);
   });
 
-  socket.on('who am i', async callback => {
+  socket.on('who am i', async (callback) => {
     console.log(`I am ${user.user_name}`);
     callback(user);
   });
 
-  socket.on('contacts', async userId => {
+  socket.on('contacts', async (userId) => {
     const contacts = await getContacts(userId);
     socket.emit('contacts', contacts);
   });
 
-  socket.on('message', async message => {
+  socket.on('message', async (message) => {
     try {
       const newMessage = await addMessage(message);
       if (Object.keys(newMessage).length === 0) {
