@@ -69,7 +69,7 @@ export default new Vuex.Store({
     },
     removeContact(state, contactId) {
       console.dir({ contacts: state.contacts, contactId });
-      state.contacts = state.contacts.filter(c => +c.id !== +contactId);
+      state.contacts = state.contacts.filter((c) => +c.id !== +contactId);
       console.log(state.contacts);
     },
     /**
@@ -96,7 +96,7 @@ export default new Vuex.Store({
         console.log(`socket.connected - ${socket.connected}`);
         if (socket.connected) {
           console.log('socket.connected');
-          socket.emit('who am i', async user => {
+          socket.emit('who am i', async (user) => {
             console.log('who am i');
             commit('setUser', user);
           });
@@ -105,23 +105,23 @@ export default new Vuex.Store({
           console.log("З'єднання НЕ встановлено");
           commit('setSocket', null);
         }
-        socket.on('send rooms', async rooms => {
+        socket.on('send rooms', async (rooms) => {
           commit('setRooms', rooms);
         });
-        socket.on('i am is', user => {
+        socket.on('i am is', (user) => {
           commit('setUser', user);
         });
-        socket.on('contacts', contacts => {
+        socket.on('contacts', (contacts) => {
           const contact = state.contact;
           if (Object.keys(contact) !== 0) {
-            const index = contacts.findIndex(c => c.id === contact.id);
+            const index = contacts.findIndex((c) => c.id === contact.id);
             if (index === -1) {
               commit('setContact', {});
             }
           }
           commit('setContacts', contacts);
         });
-        socket.on('message', message => {
+        socket.on('message', (message) => {
           console.dir(message);
           commit('addMessage', message);
         });
@@ -134,22 +134,24 @@ export default new Vuex.Store({
           }
         });
       });
-      socket.on('connect_error', error => {
+      socket.on('connect_error', (error) => {
         console.log(`Відбулась помилка з\'єднання: ${error.message}!`);
         if (error.message === 'unauthorized') {
           socket.disconnect(true);
         }
         commit('setConnectionError', error.message);
       });
-      socket.on('disconnect', reason => {
+      socket.on('disconnect', (reason) => {
         console.log(`З\'єднання розірване, причина - ${reason}.`);
         commit('setSocket', null);
       });
     },
     changeRoom({ commit, state }, roomId) {
-      const room = state.rooms.find(r => r.room_id === roomId);
+      console.log('change room', roomId);
+      const room = state.rooms.find((r) => r.room_id === roomId);
+      console.dir({ room });
       commit('setRoom', room);
-      state.socket.emit('join', roomId, messages => {
+      state.socket.emit('join', roomId, (messages) => {
         commit('setMessages', messages);
       });
     },
@@ -183,7 +185,7 @@ export default new Vuex.Store({
       });
     },
     setActiveContact({ commit, state }, contactId) {
-      const contact = state.contacts.find(c => c.id === contactId);
+      const contact = state.contacts.find((c) => c.id === contactId);
       commit('setContact', contact);
     },
     getContacts({ state }, userId) {
