@@ -130,7 +130,8 @@ export default new Vuex.Store({
           commit('addRoom', sendRoom);
           commit('removeContact', contact);
           if (isOwner) {
-            dispatch('changeRoom', sendRoom.room_id);
+            commit('setRoom', sendRoom);
+            console.log({ room: state.room });
           }
         });
       });
