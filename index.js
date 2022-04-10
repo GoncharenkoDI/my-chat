@@ -136,7 +136,6 @@ io.on('connect', async (socket) => {
   socket.on('new chat', async (memberId) => {
     console.log(`new chat execute with memberId = ${memberId}`);
     const roomUsers = await createPrivateChat(memberId, user);
-    console.dir(roomUsers);
     if (roomUsers.length === 0) {
       console.log('Не вийшло створити новий чат');
       return;
@@ -148,7 +147,6 @@ io.on('connect', async (socket) => {
       const contacts = roomUsers
         .map((ru) => ru.member)
         .filter((m) => m !== member);
-      console.dir({ sendRoom, contacts });
       if (activeUsers.has(member)) {
         const sockets = activeUsers.get(member);
         for (const s of sockets) {
@@ -200,7 +198,7 @@ io.on('connect', async (socket) => {
       `користувач з id = ${user.id} ввійшов до кімнати з id = ${roomId}.`
     );
     const messages = await getMessagesInRoom(roomId);
-    callback(messages);
+    callback(messages, roomId);
   });
 
   socket.on('who am i', async (callback) => {

@@ -12,7 +12,7 @@
       <p v-if="roomsCount === 0">Ви не зареєстровані в жодній кімнаті</p>
       <div v-else class="contacts">
         <p
-          v-for="room in rooms"
+          v-for="room in $store.state.rooms.values()"
           :key="room.room_id"
           class="room"
           :class="{ active: isActiveRoom(room.room_id) }"
@@ -26,48 +26,59 @@
 </template>
 
 <script>
-// import MyToolBar from '@/components/ui/MyToolBar.vue';
-// import MyInput from '@/components/ui/MyInput.vue';
-// import MyButton from '@/components/ui/MyButton.vue';
-export default {
-  name: 'LeftSide',
-  props: { isActive: Boolean },
-  computed: {
-    rooms() {
-      return this.$store.state.rooms;
+  // import MyToolBar from '@/components/ui/MyToolBar.vue';
+  // import MyInput from '@/components/ui/MyInput.vue';
+  // import MyButton from '@/components/ui/MyButton.vue';
+  export default {
+    name: 'LeftSide',
+    props: { isActive: Boolean },
+    computed: {
+      rooms() {
+        // if (this.$store.state.rooms) {
+        //   return [...this.$store.state.rooms.values()];
+        // } else {
+        //   return [];
+        // }
+        return this.getRooms();
+      },
+      roomsCount() {
+        return this.rooms.length;
+      },
     },
-    roomsCount() {
-      return this.$store.state.rooms.length;
-    }
-  },
-  methods: {
-    isActiveRoom(roomId) {
-      return this.$store.state.room.room_id === roomId;
+    methods: {
+      isActiveRoom(roomId) {
+        return roomId && this.$store.state.room.room_id === roomId;
+      },
+      changeRoom(id) {
+        this.$store.dispatch('changeRoom', id);
+      },
+      goContacts() {
+        this.$router.push({
+          path: '/contacts',
+        });
+      },
+      getRooms() {
+        if (this.$store.state.rooms) {
+          return [...this.$store.state.rooms.values()];
+        } else {
+          return [];
+        }
+      },
     },
-    changeRoom(id) {
-      this.$store.dispatch('changeRoom', id);
+    components: {
+      /*MyToolBar, MyInput, MyButton*/
     },
-    goContacts() {
-      console.log('goContacts');
-      this.$router.push({
-        path: '/contacts'
-      });
-    }
-  },
-  components: {
-    /*MyToolBar, MyInput, MyButton*/
-  }
-};
+  };
 </script>
 
 <style lang="scss" scoped>
-.btn {
-  background: none;
-  color: #dee2e6;
-  border: 1px solid #dee2e6;
-}
-.btn:hover {
-  color: #fff;
-  border: 1px solid #fff;
-}
+  .btn {
+    background: none;
+    color: #dee2e6;
+    border: 1px solid #dee2e6;
+  }
+  .btn:hover {
+    color: #fff;
+    border: 1px solid #fff;
+  }
 </style>

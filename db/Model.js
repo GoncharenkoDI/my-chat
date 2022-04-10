@@ -85,7 +85,6 @@ class Model {
     if (returning.length !== 0) {
       sql += ` RETURNING ${returning.join()}`;
     }
-    console.dir({ title: 'insert', sql, values });
     const { rows } = await this.client.query(sql, values);
     return rows[0];
   }

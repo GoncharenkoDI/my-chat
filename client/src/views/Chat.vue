@@ -64,7 +64,10 @@
     },
     async mounted() {
       console.log('mounted');
-      this.$store.dispatch('newConnection');
+      if (!this.socket) {
+        await this.$store.dispatch('newConnection');
+      }
+      console.log(`this.room - ${JSON.stringify(this.room)}`);
       if (Object.keys(this.room).length !== 0) {
         console.log('change room on mounted');
         this.$store.dispatch('changeRoom', this.room.id);

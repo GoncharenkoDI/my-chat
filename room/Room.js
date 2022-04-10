@@ -54,7 +54,6 @@ class Room extends Model {
    * @returns { Promise<string> } створена кімната
    */
   async newRoom(members, roomState = 0, roomType = 0) {
-    console.log('Room newRoom');
     try {
       // створити запис в таблиці rooms
       // створити записи в таблиці room_users - модель
@@ -68,7 +67,6 @@ class Room extends Model {
         'INSERT INTO public.rooms ( state, room_type )' +
         ' VALUES ($1, $2)' +
         ' RETURNING id';
-      console.dir({ roomState, roomType, sql });
       const { rows } = await this.query(sql, [roomState, roomType]);
       if (rows.length === 0) {
         throw new Error('Помилка створення запису в таблиці public.rooms');

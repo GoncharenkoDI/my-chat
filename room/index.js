@@ -30,10 +30,8 @@ async function getUserRooms(userId) {
  * created_at:Date, modified_at:Date}] | []>}
  */
 async function createPrivateChat(memberId, owner) {
-  console.log('createPrivateChat');
   let roomService;
   try {
-    console.log('createPrivateChat');
     roomService = await RoomService.createRoomService();
     const sql = `select 
         id, login, user_name, state, created_at, modified_at 
