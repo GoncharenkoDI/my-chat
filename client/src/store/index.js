@@ -49,8 +49,8 @@ export default new Vuex.Store({
      * @param {{room_id : string, member: number, room_name: string,
      * created_at:Date, modified_at:Date}} room
      */
-    setRoom(state, room) {
-      console.log(`setRoom, ${JSON.stringify(room)}`);
+    setRoomInRooms(state, room) {
+      console.log(`setRoomInRooms, ${JSON.stringify(room)}`);
       if (room && Object.keys(room).length > 0) {
         console.log(`really add room, ${JSON.stringify(room)}`);
         const index = state.rooms.findIndex((r) => r.room_id === room.room_id);
@@ -179,7 +179,7 @@ export default new Vuex.Store({
               )},
               кімната - ${roomId}`);
               const room = state.rooms.find((r) => r.room_id === roomId);
-              commit('setRoom', room);
+              commit('setRoomInRooms', room);
               commit('setMessages', messages);
             });
           }
