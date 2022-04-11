@@ -112,7 +112,8 @@ io.on('connect', async (socket) => {
   }
 
   console.log(
-    `З'єднання з sid ${socket.id} та користувачем з id ${user.id} записуємо в activeSockets`
+    `З'єднання з sid ${socket.id}
+    та користувачем з id ${user.id} записуємо в activeSockets`
   );
 
   activeSockets.set(socket.id, { socket, user });
@@ -230,6 +231,7 @@ io.on('connect', async (socket) => {
         console.dir({ activeRoom });
         return;
       }
+      // eslint-disable-next-line camelcase
       newMessage.user_name = user.user_name;
       if (newMessage.destination !== activeRoom) {
         console.log('Призначення повідомлення не відповідає активній кімнаті.');
