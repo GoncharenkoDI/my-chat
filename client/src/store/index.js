@@ -20,7 +20,7 @@ export default new Vuex.Store({
      * created_at:Date, modified_at:Date} } room
      */
     room: {},
-    rooms: new Map(),
+    rooms: [],
     socket: null,
     messages: [],
     contacts: [],
@@ -42,27 +42,25 @@ export default new Vuex.Store({
      * created_at:Date, modified_at:Date}] } rooms
      */
     setRooms(state, rooms) {
-      if (rooms.length === 0) {
-        state.rooms = null;
-      } else {
-        state.rooms = new Map(rooms.map((r) => [r.room_id, r]));
-      }
+      state.rooms = rooms;
     },
     /** додає нову кімнату до переліку
      * @param {*} state
      * @param {{room_id : string, member: number, room_name: string,
      * created_at:Date, modified_at:Date}} room
      */
-    addRoom(state, room) {
-      console.log(`addRoom, ${JSON.stringify(room)}`);
+    setRoom(state, room) {
+      console.log(`setRoom, ${JSON.stringify(room)}`);
       if (room && Object.keys(room).length > 0) {
-        console.log(`realy add room, ${JSON.stringify(room)}`);
-        state.rooms.set(room.room_id, room);
+        console.log(`really add room, ${JSON.stringify(room)}`);
+        const index = state.rooms.findIndex((r) => r.room_id === room.room_id);
+        if (index === -1) {
+          state.rooms.push(room);
+        } else state.rooms[index] = room;
       }
       console.dir(state.rooms);
     },
     /**
-     *
      * @param {*} state
      * @param { number } roomId
      */
@@ -125,7 +123,7 @@ export default new Vuex.Store({
         if (socket.connected) {
           console.log('socket.connected');
           socket.emit('who am i', async (user) => {
-            console.log(`who am i відповідь ${user}`);
+            console.log(`who am i відповідь ${JSON.stringify(user)}`);
             commit('setUser', user);
           });
           commit('setSocket', socket);
@@ -166,20 +164,22 @@ export default new Vuex.Store({
         });
         socket.on('new chat', (sendRoom, isOwner, contact) => {
           console.log(
-            `on new chat. 
-              Room- ${JSON.stringify(sendRoom)}, 
-              isOwner- ${isOwner}, 
+            `on new chat.
+              Room- ${JSON.stringify(sendRoom)},
+              isOwner- ${isOwner},
               contact- ${JSON.stringify(contact)}`
           );
-          commit('addRoom', sendRoom);
+
+          commit('setRoom', sendRoom);
           commit('removeContact', contact);
           if (isOwner) {
             state.socket.emit('join', sendRoom.room_id, (messages, roomId) => {
-              console.log(`join відповід. повідомлення - ${JSON.stringify(
+              console.log(`join відповідь повідомлення - ${JSON.stringify(
                 messages
               )},
               кімната - ${roomId}`);
-              commit('setRoom', state.rooms.get(roomId));
+              const room = state.rooms.find((r) => r.room_id === roomId);
+              commit('setRoom', room);
               commit('setMessages', messages);
             });
           }
@@ -199,7 +199,15 @@ export default new Vuex.Store({
     },
     changeRoom({ commit, state }, roomId) {
       console.log('change room', roomId);
-      const room = state.rooms.get(roomId);
+      const socket = state.socket;
+      if (!socket) {
+        console.log("Відсутнє з'єднання1");
+        return;
+      }
+      if (!socket.connected) {
+        return;
+      }
+      const room = state.rooms.find((r) => r.room_id === roomId);
       commit('setRoom', room);
       state.socket.emit('join', roomId, (messages) => {
         commit('setMessages', messages);

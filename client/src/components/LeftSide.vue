@@ -1,11 +1,7 @@
 <template>
   <div class="left-side" :class="{ active: isActive }">
     <my-tool-bar>
-      <my-button
-        icon-name="address-card"
-        class="btn"
-        @click.native="goContacts"
-      />
+      <my-button icon-name="address-card" class="btn" @click.native="goContacts" />
       <my-input placeholder="Пошук" layout="inline" />
     </my-tool-bar>
     <div class="room-list">
@@ -26,59 +22,58 @@
 </template>
 
 <script>
-  // import MyToolBar from '@/components/ui/MyToolBar.vue';
-  // import MyInput from '@/components/ui/MyInput.vue';
-  // import MyButton from '@/components/ui/MyButton.vue';
-  export default {
-    name: 'LeftSide',
-    props: { isActive: Boolean },
-    computed: {
-      rooms() {
-        // if (this.$store.state.rooms) {
-        //   return [...this.$store.state.rooms.values()];
-        // } else {
-        //   return [];
-        // }
-        return this.getRooms();
-      },
-      roomsCount() {
-        return this.rooms.length;
-      },
+// import MyToolBar from '@/components/ui/MyToolBar.vue';
+// import MyInput from '@/components/ui/MyInput.vue';
+// import MyButton from '@/components/ui/MyButton.vue';
+export default {
+  name: "LeftSide",
+  props: { isActive: Boolean },
+  computed: {
+    rooms() {
+      //if (this.$store.state.rooms && this.$store.state.rooms.length > 0) {
+        return this.$store.state.rooms;
+      // } else {
+      //   return [];
+      // }
     },
-    methods: {
-      isActiveRoom(roomId) {
-        return roomId && this.$store.state.room.room_id === roomId;
-      },
-      changeRoom(id) {
-        this.$store.dispatch('changeRoom', id);
-      },
-      goContacts() {
-        this.$router.push({
-          path: '/contacts',
-        });
-      },
-      getRooms() {
-        if (this.$store.state.rooms) {
-          return [...this.$store.state.rooms.values()];
-        } else {
-          return [];
-        }
-      },
+    roomsCount() {
+      return this.rooms.length;
     },
-    components: {
-      /*MyToolBar, MyInput, MyButton*/
+  },
+  methods: {
+    isActiveRoom(roomId) {
+      return roomId && this.$store.state.room.room_id === roomId;
     },
-  };
+    changeRoom(id) {
+      this.$store.dispatch("changeRoom", id);
+    },
+    goContacts() {
+      this.$router.push({
+        path: "/contacts",
+      });
+    },
+    getRooms() {
+      if (this.$store.state.rooms && this.$store.state.rooms.length > 0) {
+        return this.$store.state.rooms;
+      } else {
+        return [];
+      }
+    },
+  },
+  components: {
+    /*MyToolBar, MyInput, MyButton*/
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-  .btn {
-    background: none;
-    color: #dee2e6;
-    border: 1px solid #dee2e6;
-  }
-  .btn:hover {
-    color: #fff;
-    border: 1px solid #fff;
-  }
+.btn {
+  background: none;
+  color: #dee2e6;
+  border: 1px solid #dee2e6;
+}
+.btn:hover {
+  color: #fff;
+  border: 1px solid #fff;
+}
 </style>
