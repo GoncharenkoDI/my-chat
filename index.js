@@ -1,4 +1,6 @@
 'use strict';
+require('dotenv').config();
+//console.log(process.env);
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
@@ -12,7 +14,13 @@ const serverConfig = require('./config/server.config');
 const dbConfig = require('./config/db.config');
 
 const PUBLIC = path.resolve(__dirname, serverConfig.PUBLIC);
-const PORT = serverConfig.PORT;
+// const PORT = serverConfig.PORT;
+console.dir({
+  public: PUBLIC,
+  env: path.resolve(__dirname, process.env.CHAT_PUBLIC),
+});
+//const PUBLIC = path.resolve(__dirname, process.env.PUBLIC);
+const PORT = process.env.PORT;
 const { SESSION_MAX_AGE, SESSION_SECRET } = require('./config/secret.config');
 
 const activeSockets = new Map();
