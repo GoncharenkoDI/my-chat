@@ -103,6 +103,10 @@ io.on('connect', async (socket) => {
     session.socketId = socket.id;
     session.save();
   }
+  /**
+   * @constant {{id : number, login: string, user_name: string,
+   * state: number, created_at:Date, modified_at:Date}} user
+   */
   const user = socket.request.user;
 
   if (!user) {
@@ -126,8 +130,8 @@ io.on('connect', async (socket) => {
 
   const rooms = await getUserRooms(user.id);
 
-  socket.emit('send rooms', rooms);
-  socket.emit('i am is', user);
+  socket.emit('rooms', rooms);
+  socket.emit('user', user);
 
   socket.on('get rooms', async (callback) => {
     const rooms = await getUserRooms(user.id);

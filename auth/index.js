@@ -1,9 +1,9 @@
 'use strict';
-const { inspect } = require('util');
+//const { inspect } = require('util');
 const UserService = require('../user/User.Service');
 
-/** записує в req.usr користувача, якщо в сессії знаходить збережений userId та в БД є такий користувач,
- *
+/** записує в req.usr користувача, якщо в сесії знаходить збережений userId
+ * та в БД є такий користувач,
  * @param { Request } req Об'єкт запиту
  * @param { Response } res Об'єкт відповіді
  * @param { NextFunction } next Функція, яка продовжує обробку запиту
@@ -22,7 +22,7 @@ async function authentication(req, res, next) {
   next();
 }
 
-/** використовуэться для отримання інф. про користувача
+/** використовується для отримання інф. про користувача
  * @param { number } id ідентифікатор користувача
  * @returns { Promise<{id : number, login: string, user_name: string,
  * state: number, created_at:Date, modified_at:Date} | null> }
@@ -108,7 +108,7 @@ async function registerHandler(req, res) {
   }
 }
 
-/** Повертає користувача за ID в сессії
+/** Повертає користувача за ID в сесії
  *
  * @param { Request } req Об'єкт запиту
  * @param { Response } res Об'єкт відповіді
@@ -130,14 +130,14 @@ async function authUserHandler(req, res) {
   }
 }
 
-/** Процедура виходу користувача та закриття сессії
+/** Процедура виходу користувача та закриття сесії
  *
  * @param { Request } req Об'єкт запиту
  * @param { Response } res Об'єкт відповіді
  * @returns { boolean }
  */
 async function logoutHandler(req, res) {
-  // можливо треба прочитати сессію з запиту та для неї встановити кінець
+  // можливо треба прочитати сесію з запиту та для неї встановити кінець
   res.cookie('connect.sid', '', { expires: new Date() });
   res.json(true);
   return;
