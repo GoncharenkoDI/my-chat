@@ -1,9 +1,10 @@
 'use strict';
+require('dotenv').config();
 const db = require('../db/index');
 const Model = require('../db/Model');
 const bcrypt = require('bcrypt');
-const secretConfig = require('../config/secret.config');
-
+//const secretConfig = require('../config/secret.config');
+const SALT = process.env.SALT;
 class User extends Model {
   /**
    *
@@ -21,7 +22,8 @@ class User extends Model {
   /** користувач за його логіном
    * @param { {key: value} } params
    * @returns {Promise<{id : number, login: string, user_name: string,
-   * state: number, created_at:Date, modified_at:Date}>} користувач за його логіном або {}
+   * state: number, created_at:Date, modified_at:Date}>
+   * } користувач за його логіном або {}
    */
   async findUser(params) {
     try {
@@ -39,7 +41,8 @@ class User extends Model {
   /** користувач за його id
    * @param { number } userId
    * @returns {Promise<{id : number, login: string, user_name: string,
-   * state: number, created_at:Date, modified_at:Date}>} користувач за його id або {}
+   * state: number, created_at:Date, modified_at:Date}>
+   * } користувач за його id або {}
    */
   async getUserById(userId) {
     try {
@@ -54,11 +57,12 @@ class User extends Model {
     }
   }
 
-  /** повертає результат порівняння переданого пароля з тим, що закеширований в БД
-   * @param { number } userId - ідентифікатор користувача, для якого перевіряється пароль
+  /** повертає результат порівняння переданого пароля з тим, що кешований в БД
+   * @param { number } userId - ідентифікатор користувача,
+   *  для якого перевіряється пароль
    * @param { string } verifiedPassword - пароль для перевірки
-   * @returns { Promise<boolean> } проміс, який буде вирішений як результат порівняння
-   * із збереженим в БД паролем
+   * @returns { Promise<boolean> } проміс,
+   * який буде вирішений як результат порівняння * із збереженим в БД паролем
    */
   async verifyPassword(userId, verifiedPassword) {
     try {
@@ -90,9 +94,10 @@ class User extends Model {
           `Довжина поля username повинна бути не менше ${minLength} символів.`
         );
       }
-      const hashPassword = await bcrypt.hash(password, secretConfig.SALT);
+      const hashPassword = await bcrypt.hash(password, SALT);
 
       const user = await this.insert(
+        // eslint-disable-next-line camelcase
         { login, password: hashPassword, user_name: username },
         ['id', 'login', 'user_name', 'state', 'created_at', 'modified_at']
       );
@@ -111,7 +116,7 @@ class User extends Model {
    */
   async getContacts(userId) {
     try {
-      const sql = `select id, login, user_name, state, created_at, modified_at 
+      const sql = `select id, login, user_name, state, created_at, modified_at
         from public.contacts
         where "owner" = $1`;
       const { rows } = await this.query(sql, [userId]);

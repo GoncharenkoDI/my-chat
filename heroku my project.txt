@@ -1,0 +1,4 @@
+https://evening-journey-06135.herokuapp.com/
+https://git.heroku.com/evening-journey-06135.git
+postgres://kiqyxgwnfftzps:665f4ae97d8303ac4ea4488f1fec95dc4e4d3e59196f33ac5c23a5435ccde44d@ec2-34-194-158-176.compute-1.amazonaws.com:5432/d1l09rlbrveb9k
+heroku pg:push vue-chat DATABASE_URL --app evening-journey-06135

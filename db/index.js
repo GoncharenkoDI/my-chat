@@ -1,8 +1,8 @@
 'use strict';
+require('dotenv').config();
 const { Pool } = require('pg');
-const config = require('../config/db.config.js');
-
-const pool = new Pool(config);
+const connectionString = process.env.DATABASE_URL;
+const pool = new Pool({ connectionString });
 console.log('create new Pool');
 module.exports = {
   /** повертає результат виконання sql
@@ -30,7 +30,7 @@ module.exports = {
    * @returns  { Promise<any> } повертає результат виконання sql
    */
   async clientQuery(client, sql, params) {
-    result = await client.query(sql, params);
+    const result = await client.query(sql, params);
     return result;
   },
 };

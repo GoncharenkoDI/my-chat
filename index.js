@@ -10,23 +10,42 @@ const app = express();
 
 const server = require('http').createServer(app);
 
-const serverConfig = require('./config/server.config');
-const dbConfig = require('./config/db.config');
+//const serverConfig = require('./config/server.config');
+//const dbConfig = require('./config/db.config');
 
-const PUBLIC = path.resolve(__dirname, serverConfig.PUBLIC);
+//const PUBLIC = path.resolve(__dirname, serverConfig.PUBLIC);
 // const PORT = serverConfig.PORT;
-console.dir({
-  public: PUBLIC,
-  env: path.resolve(__dirname, process.env.CHAT_PUBLIC),
-});
+// console.dir({
+//   public: PUBLIC,
+//   env: path.resolve(__dirname, process.env.CHAT_PUBLIC),
+// });
 //const PUBLIC = path.resolve(__dirname, process.env.PUBLIC);
-const PORT = process.env.PORT;
-const { SESSION_MAX_AGE, SESSION_SECRET } = require('./config/secret.config');
+//const PORT = process.env.PORT;
+//const { SESSION_MAX_AGE, SESSION_SECRET } = require('./config/secret.config');
 
+/*
+DATABASE_URL="postgresql://honcharenko:241100@localhost:5432/vue-chat"
+PORT=8080
+PUBLIC_PATH="./client/dist"
+SECRET= "Ну дуже секретне слово"
+SALT= 12
+EXPIRED_INTERVAL= 2592000000
+MAX_SESSIONS= 5
+SESSION_SECRET= "Ще секретніше слово"
+SESSION_EXPIRES= 86400000
+*/
+const {
+  DATABASE_URL,
+  PORT = 5000,
+  PUBLIC_PATH = './client/dist',
+  SESSION_SECRET,
+  SESSION_MAX_AGE,
+} = process.env;
 const activeSockets = new Map();
 const activeUsers = new Map();
 
-app.use(express.static(PUBLIC));
+console.log(`PUBLIC_PATH`, path.resolve(__dirname, PUBLIC_PATH));
+app.use(express.static(path.resolve(__dirname, PUBLIC_PATH)));
 
 const {
   authentication,
@@ -44,7 +63,8 @@ app.use(bodyParser.json({}));
 const expressSession = require('express-session');
 const session = expressSession({
   store: new (require('connect-pg-simple')(expressSession))({
-    conObject: dbConfig,
+    conString: DATABASE_URL,
+    //conObject: dbConfig,
   }),
   secret: SESSION_SECRET,
   resave: false,
