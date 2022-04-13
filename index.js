@@ -64,6 +64,7 @@ const expressSession = require('express-session');
 const session = expressSession({
   store: new (require('connect-pg-simple')(expressSession))({
     conString: DATABASE_URL,
+    sslmode: 'disable',
     //conObject: dbConfig,
   }),
   secret: SESSION_SECRET,
