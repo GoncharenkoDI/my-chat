@@ -4,7 +4,7 @@ const db = require('../db/index');
 const Model = require('../db/Model');
 const bcrypt = require('bcrypt');
 //const secretConfig = require('../config/secret.config');
-const SALT = process.env.SALT;
+const SALT = +process.env.SALT;
 class User extends Model {
   /**
    *

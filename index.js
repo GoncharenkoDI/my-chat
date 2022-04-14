@@ -38,7 +38,7 @@ const {
   PORT = 5000,
   PUBLIC_PATH = './client/dist',
   SESSION_SECRET,
-  SESSION_MAX_AGE,
+  SESSION_EXPIRES,
 } = process.env;
 const activeSockets = new Map();
 const activeUsers = new Map();
@@ -62,14 +62,16 @@ app.use(bodyParser.json({}));
 const expressSession = require('express-session');
 const { getPool } = require('./db');
 const pool = getPool();
+const maxAge = +SESSION_EXPIRES;
+console.log({ maxAge });
 const session = expressSession({
   store: new (require('connect-pg-simple')(expressSession))({
     pool,
   }),
   secret: SESSION_SECRET,
-  resave: false,
+  resave: true,
   saveUninitialized: false,
-  cookie: { maxAge: SESSION_MAX_AGE },
+  cookie: { maxAge: +SESSION_EXPIRES },
 });
 
 app.use(session);

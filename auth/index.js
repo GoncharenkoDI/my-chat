@@ -9,6 +9,7 @@ const UserService = require('../user/User.Service');
  * @param { NextFunction } next Функція, яка продовжує обробку запиту
  */
 async function authentication(req, res, next) {
+  console.log('authentication');
   if (req.session && req.session.userId) {
     const userId = req.session.userId;
     const user = await deserializeUser(userId);
@@ -28,6 +29,7 @@ async function authentication(req, res, next) {
  * state: number, created_at:Date, modified_at:Date} | null> }
  */
 async function deserializeUser(id) {
+  console.log('deserializeUser');
   let userService;
   try {
     userService = await UserService.createUserService();
@@ -66,7 +68,9 @@ async function loginHandler(req, res) {
       res.status(401).json({ message: 'Помилковий логін або пароль.' });
       return;
     }
+
     req.session.userId = user.id;
+    console.log(`write ${user.id} into req.session.userId`);
     res.json(user);
     return;
   } catch (error) {
