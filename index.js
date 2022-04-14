@@ -35,7 +35,6 @@ SESSION_SECRET= "Ще секретніше слово"
 SESSION_EXPIRES= 86400000
 */
 const {
-  DATABASE_URL,
   PORT = 5000,
   PUBLIC_PATH = './client/dist',
   SESSION_SECRET,
@@ -44,7 +43,7 @@ const {
 const activeSockets = new Map();
 const activeUsers = new Map();
 
-console.log(`PUBLIC_PATH`, path.resolve(__dirname, PUBLIC_PATH));
+console.log(`PUBLIC_PATH - ${path.resolve(__dirname, PUBLIC_PATH)}`);
 app.use(express.static(path.resolve(__dirname, PUBLIC_PATH)));
 
 const {
@@ -61,11 +60,11 @@ const { getContacts } = require('./user');
 app.use(bodyParser.json({}));
 
 const expressSession = require('express-session');
+const { getPool } = require('./db');
+const pool = getPool();
 const session = expressSession({
   store: new (require('connect-pg-simple')(expressSession))({
-    conString: DATABASE_URL,
-    sslmode: 'disable',
-    //conObject: dbConfig,
+    pool,
   }),
   secret: SESSION_SECRET,
   resave: false,

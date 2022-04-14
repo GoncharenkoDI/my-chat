@@ -2,9 +2,17 @@
 require('dotenv').config();
 const { Pool } = require('pg');
 const connectionString = process.env.DATABASE_URL;
-const pool = new Pool({ connectionString, sslmode: 'disable' });
+const pool = new Pool({
+  connectionString,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 console.log('create new Pool');
 module.exports = {
+  getPool() {
+    return pool;
+  },
   /** повертає результат виконання sql
    * @param {String} sql
    * @param {Array} params
