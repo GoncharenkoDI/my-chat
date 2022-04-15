@@ -4,12 +4,19 @@ const { Pool } = require('pg');
 const connectionString = process.env.DATABASE_URL;
 let pool;
 try {
-  pool = new Pool({
-    connectionString,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    pool = new Pool({
+      connectionString,
+      ssl: false,
+    });
+  } else {
+    pool = new Pool({
+      connectionString,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
+  }
 } catch (error) {
   console.log(error);
   throw error;
