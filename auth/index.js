@@ -1,5 +1,4 @@
 'use strict';
-//const { inspect } = require('util');
 const UserService = require('../user/User.Service');
 
 /** записує в req.usr користувача, якщо в сесії знаходить збережений userId
@@ -10,15 +9,25 @@ const UserService = require('../user/User.Service');
  */
 async function authentication(req, res, next) {
   console.log('authentication');
-  if (req.session && req.session.userId) {
-    const userId = req.session.userId;
-    const user = await deserializeUser(userId);
-    if (!user) {
+  try {
+    if (req.session && req.session.userId) {
+      const userId = req.session.userId;
+      const user = await deserializeUser(userId);
+      if (!user) {
+        delete req['user'];
+      }
+      req.user = user;
+    } else {
       delete req['user'];
     }
-    req.user = user;
-  } else {
-    delete req['user'];
+  } catch (error) {
+    if (!error.type) {
+      error.type = 'auth error';
+    }
+    if (!error.source) {
+      error.source = 'auth authentication';
+    }
+    console.log(error);
   }
   next();
 }
@@ -39,8 +48,14 @@ async function deserializeUser(id) {
     }
     return user;
   } catch (error) {
+    if (!error.type) {
+      error.type = 'auth error';
+    }
+    if (!error.source) {
+      error.source = 'auth deserializeUser';
+    }
     console.dir(error);
-    return null;
+    throw error;
   } finally {
     if (userService) {
       userService.release();

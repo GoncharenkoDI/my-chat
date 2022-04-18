@@ -3,6 +3,7 @@ require('dotenv').config();
 const db = require('../db/index');
 const Model = require('../db/Model');
 const bcrypt = require('bcrypt');
+const { type } = require('express/lib/response');
 //const secretConfig = require('../config/secret.config');
 const SALT = +process.env.SALT;
 class User extends Model {
@@ -15,8 +16,19 @@ class User extends Model {
   }
 
   static async createUser() {
-    const client = await db.getClient();
-    return new User(client);
+    try {
+      const client = await db.getClient();
+      return new User(client);
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User createUser';
+        console.log(error);
+      }
+      throw error;
+    }
   }
 
   /** користувач за його логіном
@@ -33,8 +45,14 @@ class User extends Model {
       );
       return user;
     } catch (error) {
-      console.log(error);
-      return {};
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User findUser';
+        console.log(error);
+      }
+      throw error;
     }
   }
 
@@ -48,12 +66,18 @@ class User extends Model {
     try {
       const user = await this.findOne(
         ['id', 'login', 'user_name', 'state', 'created_at', 'modified_at'],
-        { id: userId }
+        { id: userId, state: 0 }
       );
       return user;
     } catch (error) {
-      console.log(error);
-      return {};
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User getUserById';
+        console.log(error);
+      }
+      throw error;
     }
   }
 
@@ -66,45 +90,79 @@ class User extends Model {
    */
   async verifyPassword(userId, verifiedPassword) {
     try {
-      const { password } = await this.findOne(['password'], { id: userId });
-      if (!password)
-        throw new Error(`Користувач з id ${userId} не знайдено в БД.`);
+      const { password } = await this.findOne(['password'], {
+        id: userId,
+        state: 0,
+      });
+      if (!password) {
+        const error = new Error(`Користувач з id ${userId} не знайдено в БД.`);
+        error.type = 'auth error';
+        throw error;
+      }
       return await bcrypt.compare(verifiedPassword, password);
     } catch (error) {
-      console.log(error);
-      return false;
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User verifyPassword';
+        console.log(error);
+      }
+      throw error;
     }
   }
 
+  /** створює нового користувача в БД
+   * @param { string } login
+   * @param { string } password
+   * @param { string } username
+   * @returns { {id : number, login: string, user_name: string,
+   * state: number, created_at:Date, modified_at:Date} }
+   */
   async newUser(login, password, username) {
     const minLength = 6;
     try {
-      if (login.length < minLength) {
-        throw new Error(
-          `Довжина поля login повинна бути не менше ${minLength} символів.`
-        );
-      }
-      if (password.length < minLength) {
-        throw new Error(
-          `Довжина поля password повинна бути не менше ${minLength} символів.`
-        );
-      }
-      if (username.length < minLength) {
-        throw new Error(
-          `Довжина поля username повинна бути не менше ${minLength} символів.`
-        );
+      if (
+        login.length < minLength ||
+        password.length < minLength ||
+        username.length < minLength
+      ) {
+        const error = new Error('');
+        error.type = 'check params';
+        if (login.length < minLength) {
+          error.message = `login повинен бути не менше ${minLength} символів.`;
+          throw error;
+        }
+        if (password.length < minLength) {
+          error.message = `password повинен бути не менше ${minLength}
+          символів.`;
+          throw error;
+        }
+        if (username.length < minLength) {
+          error.message = `username повинен бути не менше ${minLength}
+          символів.`;
+          throw error;
+        }
       }
       const hashPassword = await bcrypt.hash(password, SALT);
 
-      const user = await this.insert(
-        // eslint-disable-next-line camelcase
-        { login, password: hashPassword, user_name: username },
-        ['id', 'login', 'user_name', 'state', 'created_at', 'modified_at']
-      );
+      const /**@type { {id : number, login: string, user_name: string,
+         * state: number, created_at:Date, modified_at:Date} } */ user =
+          await this.insert(
+            // eslint-disable-next-line camelcase
+            { login, password: hashPassword, user_name: username, state: 0 },
+            ['id', 'login', 'user_name', 'state', 'created_at', 'modified_at']
+          );
       return user;
     } catch (error) {
-      console.log(error);
-      return {};
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User newUser';
+        console.log(error);
+      }
+      throw error;
     }
   }
 
@@ -123,8 +181,14 @@ class User extends Model {
       const { rows } = await this.query(sql, [userId]);
       return rows;
     } catch (error) {
-      console.dir(error);
-      return [];
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User getContacts';
+        console.log(error);
+      }
+      throw error;
     }
   }
 }
