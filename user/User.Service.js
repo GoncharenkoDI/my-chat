@@ -9,8 +9,8 @@ class UserService {
     this.model = model;
   }
 
-  static async createUserService() {
-    const model = await User.createUser();
+  static async createService() {
+    const model = await User.createModel();
     return new UserService(model);
   }
 

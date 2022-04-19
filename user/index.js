@@ -10,7 +10,7 @@ const UserService = require('./User.Service');
 async function getContacts(userId) {
   let userService;
   try {
-    userService = await UserService.createUserService();
+    userService = await UserService.createService();
     const contacts = await userService.getContacts(userId);
     return contacts;
   } catch (error) {
