@@ -9,12 +9,23 @@ class RoomService {
     this.model = model;
   }
 
-  static async createRoomService() {
-    const model = await Room.createRoom();
-    return new RoomService(model);
+  static async createService() {
+    try {
+      const model = await Room.createModel();
+      return new RoomService(model);
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Room.Service createService';
+        console.log(error);
+      }
+      throw error;
+    }
   }
 
-  /** знаходит в БД кімнати, в яких зареєстрований користувач
+  /** знаходить в БД кімнати, в яких зареєстрований користувач
    * @param { number } userId
    * @returns { Promise<[{room_id : string, member: number, room_name: string,
    * created_at:Date, modified_at:Date}]> } - повертає перелік користувача
@@ -37,11 +48,18 @@ class RoomService {
    */
   async findUserRoomsById(roomId) {
     try {
+      // eslint-disable-next-line camelcase
       const rooms = await this.model.findRooms({ room_id: roomId });
       return rooms;
     } catch (error) {
-      console.dir(error);
-      return [];
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Room.Service findUserRoomsById';
+        console.log(error);
+      }
+      throw error;
     }
   }
 

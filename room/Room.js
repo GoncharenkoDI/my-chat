@@ -12,11 +12,22 @@ class Room extends Model {
   }
 
   /**
-   * @returns { Promise<Room> } створення екземпляру класа Room
+   * @returns { Promise<Room> } створення екземпляру класу Room
    */
-  static async createRoom() {
-    const client = await db.getClient();
-    return new Room(client);
+  static async createModel() {
+    try {
+      const client = await db.getClient();
+      return new Room(client);
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Room createModel';
+        console.log(error);
+      }
+      throw error;
+    }
   }
 
   /** Пошук кімнат в БД
@@ -32,8 +43,14 @@ class Room extends Model {
       );
       return rooms;
     } catch (error) {
-      console.dir(error);
-      return [];
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Room findRooms';
+        console.log(error);
+      }
+      throw error;
     }
   }
 
@@ -43,14 +60,32 @@ class Room extends Model {
    * created_at:Date, modified_at:Date}]>} перелік кімнат
    */
   async findUserRooms(userId) {
-    const rooms = await this.findRooms({ member: userId });
-    return rooms;
+    try {
+      const rooms = await this.findRooms({ member: userId });
+      return rooms;
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Room findUserRooms';
+        console.log(error);
+      }
+      throw error;
+    }
   }
 
   /**
-   * @param { [{id : number, name: string}] } members id учасника кімнати, назва кімнат для кожного учасника
-   * @param { number } roomState стан кімнати, що створюються 0-доступна 1-заблокована
-   * @param { number } roomType тип кімнати 0-чат 2 користувачів, 1-група користувачів, 2 - інформаційний канал
+   * @param { [{id : number, name: string}] } members id учасника кімнати,
+   *   назва кімнат для кожного учасника
+   * @param { number } roomState стан кімнати, що створюються
+   *  0-доступна,
+   *  1-заблокована
+   * @param { number } roomType тип кімнати
+   *   0-чат
+   *   2 користувачів,
+   *   1-група користувачів,
+   *   2 - інформаційний канал
    * @returns { Promise<string> } створена кімната
    */
   async newRoom(members, roomState = 0, roomType = 0) {
@@ -75,17 +110,25 @@ class Room extends Model {
       members.forEach(async (member) => {
         console.dir({ roomId, member });
         await this.insert({
+          // eslint-disable-next-line camelcase
           room_id: roomId,
           member: member.id,
+          // eslint-disable-next-line camelcase
           room_name: member.name,
         });
       });
       await this.client.query('COMMIT');
       return roomId;
     } catch (error) {
-      console.log(error);
       await this.client.query('ROLLBACK');
-      return undefined;
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Room newRoom';
+        console.log(error);
+      }
+      throw error;
     }
   }
 }

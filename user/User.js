@@ -3,7 +3,6 @@ require('dotenv').config();
 const db = require('../db/index');
 const Model = require('../db/Model');
 const bcrypt = require('bcrypt');
-const { type } = require('express/lib/response');
 //const secretConfig = require('../config/secret.config');
 const SALT = +process.env.SALT;
 class User extends Model {
@@ -24,7 +23,7 @@ class User extends Model {
         error.type = 'server error';
       }
       if (!error.source) {
-        error.source = 'User createUser';
+        error.source = 'User createModel';
         console.log(error);
       }
       throw error;

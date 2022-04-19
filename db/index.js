@@ -37,7 +37,7 @@ module.exports = {
     return result;
   },
 
-  /** повертає нового клієнта з пула
+  /** повертає нового клієнта з пула, під'єднаного до БД
    * @returns { Promise<PoolClient>}
    */
   async getClient() {

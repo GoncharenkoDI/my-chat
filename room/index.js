@@ -9,7 +9,7 @@ const RoomService = require('./Room.Service');
 async function getUserRooms(userId) {
   let roomService;
   try {
-    roomService = await RoomService.createRoomService();
+    roomService = await RoomService.createService();
     const rooms = await roomService.findUserRooms(userId);
     return rooms;
   } catch (error) {
@@ -32,9 +32,9 @@ async function getUserRooms(userId) {
 async function createPrivateChat(memberId, owner) {
   let roomService;
   try {
-    roomService = await RoomService.createRoomService();
-    const sql = `select 
-        id, login, user_name, state, created_at, modified_at 
+    roomService = await RoomService.createService();
+    const sql = `select
+        id, login, user_name, state, created_at, modified_at
       from public.users
       where id = $1`;
 
