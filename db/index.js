@@ -38,7 +38,7 @@ module.exports = {
       return result;
     } catch (error) {
       if (!error.type) {
-        error.type = 'server error';
+        error.type = 'db error';
       }
       if (!error.source) {
         error.source = 'db index query';
@@ -57,7 +57,7 @@ module.exports = {
       return client;
     } catch (error) {
       if (!error.type) {
-        error.type = 'server error';
+        error.type = 'db error';
       }
       if (!error.source) {
         error.source = 'db index getClient';
@@ -79,7 +79,7 @@ module.exports = {
       return result;
     } catch (error) {
       if (!error.type) {
-        error.type = 'server error';
+        error.type = 'db error';
       }
       if (!error.source) {
         error.source = 'db index clientQuery';
