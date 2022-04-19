@@ -28,21 +28,43 @@ module.exports = {
     return pool;
   },
   /** повертає результат виконання sql
-   * @param {String} sql
-   * @param {Array} params
-   * @returns { Promise<any> }
+   * @param { String } sql
+   * @param { Array } params
+   * @returns { Promise<PgResult> }
    */
   async query(sql, params) {
-    const result = await pool.query(sql, params);
-    return result;
+    try {
+      const result = await pool.query(sql, params);
+      return result;
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'db index query';
+        console.log(error);
+      }
+      throw error;
+    }
   },
 
   /** повертає нового клієнта з пула
-   * @returns { Promise<PoolClient>}
+   * @returns { Promise< PoolClient >}
    */
   async getClient() {
-    const client = await pool.connect();
-    return client;
+    try {
+      const client = await pool.connect();
+      return client;
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'db index getClient';
+        console.log(error);
+      }
+      throw error;
+    }
   },
 
   /**
@@ -52,7 +74,18 @@ module.exports = {
    * @returns  { Promise<any> } повертає результат виконання sql
    */
   async clientQuery(client, sql, params) {
-    const result = await client.query(sql, params);
-    return result;
+    try {
+      const result = await client.query(sql, params);
+      return result;
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'db index clientQuery';
+        console.log(error);
+      }
+      throw error;
+    }
   },
 };

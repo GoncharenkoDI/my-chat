@@ -41,7 +41,7 @@ async function deserializeUser(id) {
   console.log('deserializeUser');
   let userService;
   try {
-    userService = await UserService.createUserService();
+    userService = await UserService.createService();
     const user = await userService.getUser(id);
     if (Object.keys(user).length === 0) {
       return null;
@@ -77,7 +77,7 @@ async function loginHandler(req, res) {
       delete req.session['userId'];
     }
     const { login, password } = req.body;
-    userService = await UserService.createUserService();
+    userService = await UserService.createService();
     const user = await userService.checkUser(login, password);
     if (user === false) {
       res.status(401).json({ message: 'Помилковий логін або пароль.' });
@@ -110,7 +110,7 @@ async function registerHandler(req, res) {
       delete req.session['userId'];
     }
     const { login, password, username } = req.body;
-    userService = await UserService.createUserService();
+    userService = await UserService.createService();
     const user = await userService.createUser(login, username, password);
     if (user === false) {
       res.status(400).json({ message: 'Помилка створення користувача.' });

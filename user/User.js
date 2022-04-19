@@ -3,19 +3,13 @@ require('dotenv').config();
 const db = require('../db/index');
 const Model = require('../db/Model');
 const bcrypt = require('bcrypt');
-const { type } = require('express/lib/response');
-//const secretConfig = require('../config/secret.config');
 const SALT = +process.env.SALT;
 class User extends Model {
-  /**
-   *
-   * @param { PoolClient } client
-   */
   constructor(client) {
     super(client, 'public.users');
   }
 
-  static async createUser() {
+  static async createModel() {
     try {
       const client = await db.getClient();
       return new User(client);
@@ -24,7 +18,7 @@ class User extends Model {
         error.type = 'server error';
       }
       if (!error.source) {
-        error.source = 'User createUser';
+        error.source = 'User createModel';
         console.log(error);
       }
       throw error;
@@ -35,7 +29,7 @@ class User extends Model {
    * @param { {key: value} } params
    * @returns {Promise<{id : number, login: string, user_name: string,
    * state: number, created_at:Date, modified_at:Date}>
-   * } користувач за його логіном або {}
+   * } користувач за його логіном
    */
   async findUser(params) {
     try {
