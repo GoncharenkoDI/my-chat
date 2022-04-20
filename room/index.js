@@ -14,8 +14,14 @@ async function getUserRooms(userId) {
     const rooms = await roomService.findUserRooms(userId);
     return rooms;
   } catch (error) {
-    console.dir(error);
-    return [];
+    if (!error.type) {
+      error.type = 'server error';
+    }
+    if (!error.source) {
+      error.source = 'room index getUserRooms';
+      console.log(error);
+    }
+    throw error;
   } finally {
     if (roomService) {
       roomService.release();
