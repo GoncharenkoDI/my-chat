@@ -31,6 +31,7 @@ class RoomService {
    * created_at:Date, modified_at:Date}]> } - повертає перелік користувача
    */
   async findUserRooms(userId) {
+    console.log('Room.Service findUserRooms');
     try {
       const rooms = await this.model.findUserRooms(userId);
       return rooms;

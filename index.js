@@ -159,9 +159,10 @@ io.on('connect', async (socket) => {
   sockets.push(socket.id);
 
   const rooms = await getUserRooms(user.id);
-
   socket.emit('rooms', rooms);
+  console.log(`emit user rooms - ${JSON.stringify(rooms)}`);
   socket.emit('user', user);
+  console.log(`emit user - ${JSON.stringify(user)}`);
 
   socket.on('get rooms', async (callback) => {
     const rooms = await getUserRooms(user.id);

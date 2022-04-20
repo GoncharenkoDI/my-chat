@@ -7,6 +7,7 @@ const RoomService = require('./Room.Service');
  * @returns
  */
 async function getUserRooms(userId) {
+  console.log('index getUserRooms');
   let roomService;
   try {
     roomService = await RoomService.createService();

@@ -143,7 +143,7 @@ export default new Vuex.Store({
            * created_at:Date, modified_at:Date}]} rooms
            */
           (rooms) => {
-            console.log(`on send rooms ${JSON.stringify(rooms)}`);
+            console.log(`on rooms ${JSON.stringify(rooms)}`);
             commit('setRooms', rooms);
           }
         );

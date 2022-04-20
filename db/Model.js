@@ -38,14 +38,15 @@ class Model {
    */
   async find(columns, params, orders = []) {
     try {
-      const whereColumns = Object.keys(params);
+      const whereColumns = Object.keys(params).map(
+        (c, i) => c + ' = $' + (i + 1)
+      );
       const whereValues = Object.values(params);
       const sql =
         `SELECT ${columns.join()} FROM ${this.table}` +
-        ` WHERE ${whereColumns
-          .map((c, i) => c + ' = $' + (i + 1))
-          .join(' AND ')}` +
+        ` WHERE ${whereColumns.join(' AND ')}` +
         `${orders.length !== 0 ? 'ORDER BY ' + orders.join() : ''}`;
+      console.dir({ sql, params });
       const { rows } = await this.client.query(sql, whereValues);
       return rows;
     } catch (error) {

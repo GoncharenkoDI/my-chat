@@ -36,6 +36,7 @@ class Room extends Model {
    * created_at:Date, modified_at:Date}]>} перелік кімнат
    */
   async findRooms(params) {
+    console.log('Room findRooms');
     try {
       const rooms = await this.find(
         ['room_id', 'member', 'room_name', 'created_at', 'modified_at'],
@@ -60,6 +61,7 @@ class Room extends Model {
    * created_at:Date, modified_at:Date}]>} перелік кімнат
    */
   async findUserRooms(userId) {
+    console.log('Room findUserRooms');
     try {
       const rooms = await this.findRooms({ member: userId });
       return rooms;
