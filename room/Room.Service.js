@@ -2,9 +2,6 @@
 const Room = require('./Room');
 
 class RoomService {
-  /**
-   * @param { Room } model
-   */
   constructor(model) {
     this.model = model;
   }
@@ -36,8 +33,14 @@ class RoomService {
       const rooms = await this.model.findUserRooms(userId);
       return rooms;
     } catch (error) {
-      console.dir(error);
-      return [];
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Room.Service findUserRooms';
+        console.log(error);
+      }
+      throw error;
     }
   }
 
@@ -72,16 +75,25 @@ class RoomService {
    * @returns { Promise<string> } створена кімната
    */
   async newRoom(members, roomState = 0, roomType = 0) {
-    console.dir({ members });
     try {
       const roomId = await this.model.newRoom(members, roomState, roomType);
       if (!roomId) {
-        throw new Error('Помилка створення кімнати для спілкування');
+        const error = new Error('Помилка створення кімнати для спілкування');
+        if (!error.type) {
+          error.type = 'server error';
+        }
+        throw error;
       }
       return roomId;
     } catch (error) {
-      console.dir(error);
-      return undefined;
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Room.Service newRoom';
+        console.log(error);
+      }
+      throw error;
     }
   }
 

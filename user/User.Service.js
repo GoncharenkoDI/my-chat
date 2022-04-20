@@ -62,7 +62,6 @@ class UserService {
       if (Object.keys(user).length === 0) return false;
       return user;
     } catch (error) {
-      ////////////////////////////////////////////
       if (!error.type) {
         error.type = 'check params';
       }

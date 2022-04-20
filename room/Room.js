@@ -92,8 +92,6 @@ class Room extends Model {
    */
   async newRoom(members, roomState = 0, roomType = 0) {
     try {
-      // створити запис в таблиці rooms
-      // створити записи в таблиці room_users - модель
       if (members.length === 0) {
         console.log('Відсутні підписники для нової кімнати.');
         return {};
@@ -106,11 +104,10 @@ class Room extends Model {
         ' RETURNING id';
       const { rows } = await this.query(sql, [roomState, roomType]);
       if (rows.length === 0) {
-        throw new Error('Помилка створення запису в таблиці public.rooms');
+        throw new Error('Запис в таблиці public.rooms не створений.');
       }
       const roomId = rows[0].id;
       members.forEach(async (member) => {
-        console.dir({ roomId, member });
         await this.insert({
           // eslint-disable-next-line camelcase
           room_id: roomId,
