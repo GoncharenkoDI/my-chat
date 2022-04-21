@@ -61,6 +61,7 @@ app.use(bodyParser.json({}));
 
 const expressSession = require('express-session');
 const { getPool } = require('./db');
+const { emit } = require('process');
 const pool = getPool();
 const maxAge = +SESSION_EXPIRES;
 console.log({ maxAge });
@@ -124,167 +125,191 @@ io.use((socket, next) => {
 });
 
 io.on('connect', async (socket) => {
-  console.log(`new connection ${socket.id}`);
+  try {
+    console.log(`new connection ${socket.id}`);
 
-  const session = socket.request.session;
+    const session = socket.request.session;
 
-  if (session) {
-    console.log(`saving sid ${socket.id} in session ${session.id}`);
-    session.socketId = socket.id;
-    session.save();
-  }
-  /**
-   * @constant {{id : number, login: string, user_name: string,
-   * state: number, created_at:Date, modified_at:Date}} user
-   */
-  const user = socket.request.user;
+    if (session) {
+      console.log(`saving sid ${socket.id} in session ${session.id}`);
+      session.socketId = socket.id;
+      session.save();
+    }
+    /**
+     * @type {{id : number, login: string, user_name: string,
+     * state: number, created_at:Date, modified_at:Date}}
+     */
+    const user = socket.request.user;
 
-  if (!user) {
-    console.log('not user');
-    socket.disconnect(true);
-    return;
-  }
-
-  console.log(
-    `З'єднання з sid ${socket.id}
-    та користувачем з id ${user.id} записуємо в activeSockets`
-  );
-
-  activeSockets.set(socket.id, { socket, user });
-  if (!activeUsers.has(user.id)) {
-    activeUsers.set(user.id, []);
-  }
-
-  const sockets = activeUsers.get(user.id);
-  sockets.push(socket.id);
-
-  const rooms = await getUserRooms(user.id);
-  socket.emit('rooms', rooms);
-  console.log(`emit user rooms - ${JSON.stringify(rooms)}`);
-  socket.emit('user', user);
-  console.log(`emit user - ${JSON.stringify(user)}`);
-
-  socket.on('get rooms', async (callback) => {
-    const rooms = await getUserRooms(user.id);
-    callback(rooms);
-  });
-
-  socket.on('new chat', async (memberId) => {
-    console.log(`new chat execute with memberId = ${memberId}`);
-    const roomUsers = await createPrivateChat(memberId, user);
-    if (roomUsers.length === 0) {
-      console.log('Не вийшло створити новий чат');
+    if (!user) {
+      console.log('not user');
+      socket.disconnect(true);
       return;
     }
-    //const roomId = roomUsers[0].room_id;
-    const members = roomUsers.map((roomUser) => roomUser.member);
-    for (const member of members) {
-      const sendRoom = roomUsers.find((ru) => ru.member === member);
-      const contacts = roomUsers
-        .map((ru) => ru.member)
-        .filter((m) => m !== member);
-      if (activeUsers.has(member)) {
-        const sockets = activeUsers.get(member);
-        for (const s of sockets) {
-          if (s === socket.id) {
-            // ініціатор створення переходить в створену кімнату
-            socket.emit('new chat', sendRoom, true, contacts[0]);
-          } else {
-            // просто додається в перелік кімнат
-            io.in(s).emit('new chat', sendRoom, false, contacts[0]);
+
+    console.log(
+      `З'єднання з sid ${socket.id}
+      та користувачем з id ${user.id} записуємо в activeSockets`
+    );
+
+    activeSockets.set(socket.id, { socket, user });
+    if (!activeUsers.has(user.id)) {
+      activeUsers.set(user.id, []);
+    }
+
+    /** @type [] */
+    const sockets = activeUsers.get(user.id);
+    sockets.push(socket.id);
+
+    const rooms = await getUserRooms(user.id);
+    socket.emit('rooms', rooms);
+    socket.emit('user', user);
+
+    socket.on('get rooms', async (callback) => {
+      try {
+        const rooms = await getUserRooms(user.id);
+        callback(rooms);
+      } catch (error) {
+        if (!error.type) {
+          error.type = 'server error';
+        }
+        if (!error.source) {
+          error.source = 'index on get rooms handler';
+          console.log(error);
+        }
+        socket.emit('server error', error);
+        callback([]);
+      }
+    });
+
+    socket.on('new chat', async (memberId) => {
+      console.log(`new chat execute with memberId = ${memberId}`);
+      const roomUsers = await createPrivateChat(memberId, user);
+      if (roomUsers.length === 0) {
+        console.log('Не вийшло створити новий чат');
+        return;
+      }
+      //const roomId = roomUsers[0].room_id;
+      const members = roomUsers.map((roomUser) => roomUser.member);
+      for (const member of members) {
+        const sendRoom = roomUsers.find((ru) => ru.member === member);
+        const contacts = roomUsers
+          .map((ru) => ru.member)
+          .filter((m) => m !== member);
+        if (activeUsers.has(member)) {
+          const sockets = activeUsers.get(member);
+          for (const s of sockets) {
+            if (s === socket.id) {
+              // ініціатор створення переходить в створену кімнату
+              socket.emit('new chat', sendRoom, true, contacts[0]);
+            } else {
+              // просто додається в перелік кімнат
+              io.in(s).emit('new chat', sendRoom, false, contacts[0]);
+            }
           }
         }
       }
-    }
-  });
+    });
 
-  socket.on('disconnect', (reason) => {
-    console.log(` З'єднання закрито sid ${socket.id} Причина - ${reason}.`);
-    if (activeSockets.has(socket.id)) {
-      const { user } = activeSockets.get(socket.id);
-      activeSockets.delete(socket.id);
+    socket.on('disconnect', (reason) => {
+      console.log(` З'єднання закрито sid ${socket.id} Причина - ${reason}.`);
+      if (activeSockets.has(socket.id)) {
+        const { user } = activeSockets.get(socket.id);
+        activeSockets.delete(socket.id);
 
-      if (activeUsers.has(user.id)) {
-        let sockets = activeUsers.get(user.id);
-        sockets = sockets.filter((s) => s !== socket.id);
-        if (sockets.length === 0) {
-          activeUsers.delete(user.id);
-        } else {
-          activeUsers.set(user.id, sockets);
+        if (activeUsers.has(user.id)) {
+          let sockets = activeUsers.get(user.id);
+          sockets = sockets.filter((s) => s !== socket.id);
+          if (sockets.length === 0) {
+            activeUsers.delete(user.id);
+          } else {
+            activeUsers.set(user.id, sockets);
+          }
         }
       }
-    }
-    console.dir({ activeSockets, activeUsers });
-  });
+      console.dir({ activeSockets, activeUsers });
+    });
 
-  let activeRoom;
-  socket.on('join', async (roomId, callback) => {
-    const rooms = socket.rooms;
-    rooms.forEach((room) => {
-      if (room !== socket.id) {
-        socket.leave(room);
-        console.log(
-          `користувач з id = ${user.id} вийшов з кімнати з id = ${room}.`
-        );
+    let activeRoom;
+
+    socket.on('join', async (roomId, callback) => {
+      const rooms = socket.rooms;
+      rooms.forEach((room) => {
+        if (room !== socket.id) {
+          socket.leave(room);
+          console.log(
+            `користувач з id = ${user.id} вийшов з кімнати з id = ${room}.`
+          );
+        }
+      });
+      socket.join(roomId);
+      activeRoom = roomId;
+      console.log(
+        `користувач з id = ${user.id} ввійшов до кімнати з id = ${roomId}.`
+      );
+      const messages = await getMessagesInRoom(roomId);
+      callback(messages, roomId);
+    });
+
+    socket.on('who am i', async (callback) => {
+      console.log(`I am ${user.user_name}`);
+      callback(user);
+    });
+
+    socket.on('contacts', async (userId) => {
+      const contacts = await getContacts(userId);
+      socket.emit('contacts', contacts);
+    });
+
+    socket.on('message', async (message) => {
+      try {
+        const newMessage = await addMessage(message);
+        if (Object.keys(newMessage).length === 0) {
+          console.log('Не вдалось записати повідомлення.');
+          console.dir(message);
+          console.dir(user);
+          console.dir({ activeRoom });
+          return;
+        }
+        if (newMessage.author !== user.id) {
+          console.log('Відправник не відповідає поточному користувачу.');
+          console.dir({ userId: user.id, newMessageAuthor: newMessage.author });
+          console.dir(newMessage);
+          console.dir(message);
+          console.dir(user);
+          console.dir({ activeRoom });
+          return;
+        }
+        // eslint-disable-next-line camelcase
+        newMessage.user_name = user.user_name;
+        if (newMessage.destination !== activeRoom) {
+          console.log(
+            'Призначення повідомлення не відповідає активній кімнаті.'
+          );
+          console.dir(message);
+          console.dir(newMessage);
+          console.dir(user);
+          console.dir({ activeRoom });
+          return;
+        }
+        io.to(activeRoom).emit('message', newMessage);
+      } catch (error) {
+        console.dir(error);
+        console.dir(message);
+        console.dir(user);
+        console.dir({ activeRoom });
       }
     });
-    socket.join(roomId);
-    activeRoom = roomId;
-    console.log(
-      `користувач з id = ${user.id} ввійшов до кімнати з id = ${roomId}.`
-    );
-    const messages = await getMessagesInRoom(roomId);
-    callback(messages, roomId);
-  });
-
-  socket.on('who am i', async (callback) => {
-    console.log(`I am ${user.user_name}`);
-    callback(user);
-  });
-
-  socket.on('contacts', async (userId) => {
-    const contacts = await getContacts(userId);
-    socket.emit('contacts', contacts);
-  });
-
-  socket.on('message', async (message) => {
-    try {
-      const newMessage = await addMessage(message);
-      if (Object.keys(newMessage).length === 0) {
-        console.log('Не вдалось записати повідомлення.');
-        console.dir(message);
-        console.dir(user);
-        console.dir({ activeRoom });
-        return;
-      }
-      if (newMessage.author !== user.id) {
-        console.log('Відправник не відповідає поточному користувачу.');
-        console.dir({ userId: user.id, newMessageAuthor: newMessage.author });
-        console.dir(newMessage);
-        console.dir(message);
-        console.dir(user);
-        console.dir({ activeRoom });
-        return;
-      }
-      // eslint-disable-next-line camelcase
-      newMessage.user_name = user.user_name;
-      if (newMessage.destination !== activeRoom) {
-        console.log('Призначення повідомлення не відповідає активній кімнаті.');
-        console.dir(message);
-        console.dir(newMessage);
-        console.dir(user);
-        console.dir({ activeRoom });
-        return;
-      }
-      io.to(activeRoom).emit('message', newMessage);
-    } catch (error) {
-      console.dir(error);
-      console.dir(message);
-      //console.dir(newMessage);
-      console.dir(user);
-      console.dir({ activeRoom });
+  } catch (error) {
+    if (!error.type) {
+      error.type = 'server error';
     }
-  });
+    if (!error.source) {
+      error.source = 'Room.Service findUserRooms';
+      console.log(error);
+    }
+    emit('server error', error);
+  }
 });
 
 server.listen(PORT, () => {

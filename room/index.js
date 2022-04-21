@@ -1,8 +1,7 @@
 'use strict';
 const RoomService = require('./Room.Service');
 
-/**
- *
+/** Перелік кімнат, в яких зареєстрований користувач
  * @param { number } userId
  * @returns
  */
@@ -29,8 +28,7 @@ async function getUserRooms(userId) {
   }
 }
 
-/**
- *
+/** Створення чата для двох користувачів
  * @param { number } memberId
  * @param { {} } owner
  * @returns {Promise<[{room_id : string, member: number, room_name: string,
@@ -47,7 +45,9 @@ async function createPrivateChat(memberId, owner) {
 
     const { rows } = await roomService.model.query(sql, [memberId]);
     if (rows.length === 0) {
-      throw new Error(`Користувач з id = ${memberId} не знайдено!`);
+      const error = new Error(`Користувач з id = ${memberId} не знайдено!`);
+      error.type = 'params error';
+      throw error;
     }
     const user = rows[0];
     const member = { id: user.id, name: owner.user_name };
@@ -56,8 +56,14 @@ async function createPrivateChat(memberId, owner) {
     const rooms = await roomService.findUserRoomsById(roomId);
     return rooms;
   } catch (error) {
-    console.dir(error);
-    return [];
+    if (!error.type) {
+      error.type = 'server error';
+    }
+    if (!error.source) {
+      error.source = 'room index createPrivateChat';
+      console.log(error);
+    }
+    throw error;
   } finally {
     if (roomService) {
       roomService.release();

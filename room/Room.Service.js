@@ -1,11 +1,20 @@
 'use strict';
 const Room = require('./Room');
-
+/** клас для роботи з екземпляром класу
+ * @class
+ * @public { Room } model
+ */
 class RoomService {
+  /** конструктор для створення екземпляру RoomService
+   * @param { Room } model
+   */
   constructor(model) {
-    this.model = model;
+    /**@type { Room } */ this.model = model;
   }
 
+  /** асинхронна функція для створення екземпляру RoomService
+   * @returns { RoomService }
+   */
   static async createService() {
     try {
       const model = await Room.createModel();
@@ -44,8 +53,7 @@ class RoomService {
     }
   }
 
-  /**
-   *
+  /** Вибір користувачів кімнати з id = roomId
    * @param { string } roomId
    * @returns {Promise<[{room_id : string, member: number, room_name: string,
    * created_at:Date, modified_at:Date}]>}
@@ -67,8 +75,7 @@ class RoomService {
     }
   }
 
-  /**
-   *
+  /** Створення чата для двох користувачів
    * @param {[{id : number, name: string}]} members
    * @param { number } roomState
    * @param { number } roomType

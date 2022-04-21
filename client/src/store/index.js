@@ -122,6 +122,7 @@ export default new Vuex.Store({
       const socket = io(window.location.href, {
         transports: ['websocket'],
       });
+
       socket.on('connect', () => {
         console.log(`on connect. Ідентифікатор сокету - ${socket.id}`);
         if (socket.connected) {
@@ -223,6 +224,10 @@ export default new Vuex.Store({
         commit('setMessages', []);
         commit('setContacts', []);
         commit('setSocket', null);
+      });
+
+      socket.on('server error', (error) => {
+        console.error(error);
       });
     },
     changeRoom({ commit, state }, roomId) {
