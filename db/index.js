@@ -67,7 +67,7 @@ module.exports = {
     }
   },
 
-  /**
+  /** виконує SQL запит з вказаним клієнтом
    * @param { PoolClient } client
    * @param { String } sql
    * @param {Array} params

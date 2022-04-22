@@ -305,7 +305,7 @@ io.on('connect', async (socket) => {
       error.type = 'server error';
     }
     if (!error.source) {
-      error.source = 'Room.Service findUserRooms';
+      error.source = 'index on connect';
       console.log(error);
     }
     emit('server error', error);

@@ -6,12 +6,29 @@ class UserService {
    * @param { User } model
    */
   constructor(model) {
+    /**@type { User } */
     this.model = model;
   }
 
+  /**
+   *
+   * @returns { Promise<UserService> }
+   */
   static async createService() {
-    const model = await User.createModel();
-    return new UserService(model);
+    try {
+      /**@type { User } */
+      const model = await User.createModel();
+      return new UserService(model);
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User.Service createService';
+        console.log(error);
+      }
+      throw error;
+    }
   }
 
   /** знаходить в БД користувача за його логіном та паролем
@@ -33,19 +50,35 @@ class UserService {
       if (isVerified) return user;
       return false;
     } catch (error) {
-      console.log(error);
-      return false;
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User.Service checkUser';
+        console.log(error);
+      }
+      throw error;
     }
   }
 
   /** Користувач за його id
-   *
    * @param { number } userId
    * @returns { Promise<{id : number, login: string, user_name: string,
    * state: number, created_at:Date, modified_at:Date}> Користувач
    */
   async getUser(userId) {
-    return await this.model.getUserById(userId);
+    try {
+      return await this.model.getUserById(userId);
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User.Service getUser';
+        console.log(error);
+      }
+      throw error;
+    }
   }
 
   async createUser(login, username, password) {
@@ -68,8 +101,7 @@ class UserService {
       if (!error.source) {
         error.source = 'User.Service createUser';
       }
-      console.log(error);
-      return false;
+      throw error;
     }
   }
 
@@ -85,8 +117,13 @@ class UserService {
       const contacts = await this.model.getContacts(userId);
       return contacts;
     } catch (error) {
-      console.dir(error);
-      return [];
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User.Service getContacts';
+      }
+      throw error;
     }
   }
 

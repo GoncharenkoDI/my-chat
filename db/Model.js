@@ -2,7 +2,7 @@
 const db = require('./index');
 
 /**
- * @description основні операції з БД з конкретним з'єднаннам з Pool та таблицею
+ * @description основні операції з БД з конкретним з'єднанням з Pool та таблицею
  * @property { PoolClient } client
  * @property { String } table
  */
@@ -12,7 +12,9 @@ class Model {
    * @param { String } table
    */
   constructor(client, table) {
+    /**@type { string } */
     this.table = table;
+    /**@type { PoolClient } */
     this.client = client;
   }
 
@@ -21,17 +23,8 @@ class Model {
     this.client.release();
   }
 
-  /**
-   * @param { String } table таблиця в БД, з якою пов'язана модель
-   * @returns повертає екземпляр моделі для роботи х таблицею БД
-   */
-  // static async createModel(table) {
-  //   const client = await db.getClient();
-  //   return new Model(client, table);
-  // }
-
-  /**
-   * @param { [ String ] } columns перелік стовбців в select
+  /** Побудова та виконання звичайного select до таблиці this.table
+   * @param { [ String ] } columns перелік колонок в select
    * @param { { key: value } } params параметри пошуку key = value
    * @param { [ String ] } orders порядком сортування orders
    * @returns { Promise< array | [] > } повертає результат виконання select
@@ -47,7 +40,7 @@ class Model {
         ` WHERE ${whereColumns.join(' AND ')}` +
         `${orders.length !== 0 ? 'ORDER BY ' + orders.join() : ''}`;
       console.dir({ sql, params });
-      const { rows } = await this.client.query(sql, whereValues);
+      const { rows } = await db.clientQuery(this.client, sql, whereValues);
       return rows;
     } catch (error) {
       if (!error.type) {
@@ -61,10 +54,10 @@ class Model {
     }
   }
 
-  /**
-   * @param { [ String ] } columns перелік стовбців в select
+  /**повертає 1 рядок результату select
+   * @param { [ String ] } columns перелік колонок в select
    * @param { { key: value } } params параметри пошуку key = value
-   * @returns { Promise< object|{} > } повертає 1 рядок результату select
+   * @returns { Promise< object|{} > }
    */
   async findOne(columns, params) {
     try {
@@ -89,13 +82,13 @@ class Model {
    */
   async delete(params) {
     try {
-      const whereColumns = Object.keys(params);
+      const whereColumns = Object.keys(params).map(
+        (c, i) => c + ' = $' + (i + 1)
+      );
       const whereValues = Object.values(params);
       const sql = `DELETE FROM ${this.table}
-        WHERE ${whereColumns
-          .map((c, i) => c + ' = $' + (i + 1))
-          .join(' AND ')}`;
-      const { rowCount } = await this.client.query(sql, whereValues);
+        WHERE ${whereColumns.join(' AND ')}`;
+      const { rowCount } = await db.clientQuery(this.client, sql, whereValues);
       return rowCount;
     } catch (error) {
       if (!error.type) {
@@ -111,7 +104,8 @@ class Model {
 
   /**
    * @param { { key: value } } columns - колонки таблиці та їх значення
-   * @param { [ string ] } returning - перелік колонок, які повертаються користувачу
+   * @param { [ string ] } returning - перелік колонок,
+   * які повертаються користувачу
    * @returns { Promise<object> } повертає результат операції insert в БД
    */
   async insert(columns, returning = []) {
@@ -124,7 +118,7 @@ class Model {
       if (returning.length !== 0) {
         sql += ` RETURNING ${returning.join()}`;
       }
-      const { rows } = await this.client.query(sql, values);
+      const { rows } = await db.clientQuery(this.client, sql, values);
       return rows[0];
     } catch (error) {
       if (!error.type) {
@@ -141,12 +135,12 @@ class Model {
   /**
    *
    * @param { string } sql текст запиту
-   * @param { [*] } params параметри запиту
+   * @param { [{ key: value }] } params параметри запиту
    * @returns { Promise<pg.Result> } результат виконання запиту
    */
   async query(sql, params) {
     try {
-      const result = await this.client.query(sql, params);
+      const result = await db.clientQuery(this.client, sql, params);
       return result;
     } catch (error) {
       if (!error.type) {
