@@ -9,12 +9,23 @@ class MessageService {
     this.model = model;
   }
 
-  static async createMessageService() {
-    const model = await Message.createMessage();
-    return new MessageService(model);
+  static async createService() {
+    try {
+      const model = await Message.createModel();
+      return new MessageService(model);
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Message.Service createService';
+        console.log(error);
+      }
+      throw error;
+    }
   }
   /**
-   * @param {number} roomId
+   * @param {string} roomId
    * @returns { Promise<[{
    *   id : number,
    *   destination: string,
@@ -27,16 +38,20 @@ class MessageService {
   async getMessagesInRoom(roomId) {
     try {
       const messages = await this.model.getMessagesInRoom(roomId);
-      if (Object.keys(messages).length === 0) return [];
       return messages;
     } catch (error) {
-      console.dir(error);
-      return [];
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Message.Service getMessagesInRoom';
+        console.log(error);
+      }
+      throw error;
     }
   }
 
   /** Додає повідомлення до БД
-   *
    * @param { {author: number, destination: string, text: string} } message
    * @returns { Promise<{
    *     id : number,
@@ -51,8 +66,14 @@ class MessageService {
       const newMessage = await this.model.addMessage(message);
       return newMessage;
     } catch (error) {
-      console.dir(error);
-      return [];
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Message.Service addMessage';
+        console.log(error);
+      }
+      throw error;
     }
   }
 

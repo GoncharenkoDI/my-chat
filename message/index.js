@@ -2,8 +2,7 @@
 const MessageService = require('./Message.Service');
 
 /**
- *
- * @param { number } userId
+ * @param { string } roomId
  * @returns { Promise<[{
  *   id : number,
  *   destination: string,
@@ -16,12 +15,18 @@ const MessageService = require('./Message.Service');
 async function getMessagesInRoom(roomId) {
   let messageService;
   try {
-    messageService = await MessageService.createMessageService();
+    messageService = await MessageService.createService();
     const messages = await messageService.getMessagesInRoom(roomId);
     return messages;
   } catch (error) {
-    console.dir(error);
-    return [];
+    if (!error.type) {
+      error.type = 'server error';
+    }
+    if (!error.source) {
+      error.source = 'message index getMessagesInRoom';
+      console.log(error);
+    }
+    throw error;
   } finally {
     if (messageService) {
       messageService.release();
@@ -42,12 +47,18 @@ async function getMessagesInRoom(roomId) {
 async function addMessage(message) {
   let messageService;
   try {
-    messageService = await MessageService.createMessageService();
+    messageService = await MessageService.createService();
     const messages = await messageService.addMessage(message);
     return messages;
   } catch (error) {
-    console.dir(error);
-    return {};
+    if (!error.type) {
+      error.type = 'server error';
+    }
+    if (!error.source) {
+      error.source = 'message index addMessage';
+      console.log(error);
+    }
+    throw error;
   } finally {
     if (messageService) {
       messageService.release();

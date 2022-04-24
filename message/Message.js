@@ -4,20 +4,30 @@ const Model = require('../db/Model');
 
 class Message extends Model {
   /**
-   *
    * @param { PoolClient } client
    */
   constructor(client) {
     super(client, 'public.messages');
   }
 
-  static async createMessage() {
-    const client = await db.getClient();
-    return new Message(client);
+  static async createModel() {
+    try {
+      const client = await db.getClient();
+      return new Message(client);
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Message createModel';
+        console.log(error);
+      }
+      throw error;
+    }
   }
 
-  /** Пошук повідомлень
-   * @param { number } roomId
+  /** Повідомленя, зареєстровані в кімнаті roomId
+   * @param { string } roomId
    * @returns { Promise<[{
    *   id : number,
    *   destination: string,
@@ -25,11 +35,11 @@ class Message extends Model {
    *   user_name: string,
    *   text: string,
    *   created_at:Date,
-   *   modified_at:Date}]> } знайдені повідомлення або []
+   *   modified_at:Date}]> }
    */
   async getMessagesInRoom(roomId) {
     try {
-      const sql = `select 
+      const sql = `select
         m.id, m.destination, m.author, u.user_name, m.text, m.created_at, m.modified_at
       from
         public.messages m
@@ -39,12 +49,18 @@ class Message extends Model {
       const { rows } = await this.query(sql, [roomId]);
       return rows;
     } catch (error) {
-      console.dir(error);
-      return [];
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Message getMessagesInRoom';
+        console.log(error);
+      }
+      throw error;
     }
   }
+
   /** Додає повідомлення до БД
-   *
    * @param { {author: number, destination: string, text: string} } message
    * @returns { Promise<{
    *     id : number,
@@ -52,7 +68,7 @@ class Message extends Model {
    *     author: number,
    *     text: string,
    *     created_at:Date,
-   *     modified_at:Date} | {} > }
+   *     modified_at:Date} > }
    */
   async addMessage(message) {
     try {
@@ -66,8 +82,14 @@ class Message extends Model {
       ]);
       return newMessage;
     } catch (error) {
-      console.dir(error);
-      return {};
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Message addMessage';
+        console.log(error);
+      }
+      throw error;
     }
   }
 }
