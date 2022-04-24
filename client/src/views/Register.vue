@@ -60,7 +60,7 @@ export default {
     return {
       login: '',
       password: '',
-      username: ''
+      username: '',
     };
   },
   methods: {
@@ -68,21 +68,21 @@ export default {
       await this.$store.dispatch('registerUser', {
         login: this.login,
         password: this.password,
-        username: this.username
+        username: this.username,
       });
       this.login = '';
       this.password = '';
       this.username = '';
       this.$router.push({
-        path: '/'
+        path: '/',
       });
     },
     loginClick() {
       this.$router.push({
-        path: '/login'
+        path: '/login',
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -95,6 +95,7 @@ export default {
   color: #373a3c;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 .card {
   display: flex;

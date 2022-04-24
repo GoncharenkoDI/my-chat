@@ -50,14 +50,14 @@ export default {
   data() {
     return {
       login: '',
-      password: ''
+      password: '',
     };
   },
   methods: {
     async submitForm() {
       await this.$store.dispatch('loginUser', {
         login: this.login,
-        password: this.password
+        password: this.password,
       });
       this.login = '';
       this.password = '';
@@ -73,15 +73,15 @@ export default {
       //   this.$store.state.auth.currentUser.login
       // );
       this.$router.push({
-        path: '/'
+        path: '/',
       });
     },
     registerClick() {
       this.$router.push({
-        path: '/register'
+        path: '/register',
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -94,6 +94,7 @@ export default {
   color: #373a3c;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 .card {
   display: flex;
