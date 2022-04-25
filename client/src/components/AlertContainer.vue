@@ -1,5 +1,5 @@
 <template>
-  <div class="alert-container">
+  <div class="alert-container" v-if="isShow">
     <alert-message
       v-for="message in alertMessages"
       :key="message.id"
@@ -11,9 +11,10 @@
 <script>
 import AlertMessage from '@/components/AlertMessage.vue'
 export default {
+  name: 'AlertContainer',
   data: () => ({
     showTime: 5000,
-    alertMessages = [
+    alertMessages: [
       {id: 1, text: 'info message', type: 'info', caption: 'заголовок'},
       {id: 2, text: 'warning message', type: 'warning', caption: 'заголовок'},
       {id: 3, text: 'info message', type: 'info', caption: 'заголовок'},
@@ -23,6 +24,11 @@ export default {
       {id: 7, text: 'info message', type: 'info', caption: 'заголовок'},
     ]
   }),
+  computed: {
+    isShow() {
+      return (this.alertMessages && this.alertMessages.length > 0 )
+    }
+  },
   components: { AlertMessage },
 }
 </script>
@@ -30,5 +36,11 @@ export default {
 <style scoped>
 .alert-container {
   position: absolute;
+  width: 33.333333%;
+  top: 0;
+  right: 0;
+  max-height: 100%;
+  overflow: hidden;
+  z-index: 2000;
 }
 </style>

@@ -15,6 +15,7 @@
     </div>
     <div v-if="!socket">Ви не під'єднані до програми</div>
     <div v-else class="main-content">
+      <alert-container />
       <LeftSide :isActive="isActive" />
       <ChatBox />
     </div>
@@ -22,10 +23,9 @@
 </template>
 
 <script>
-  // import MyToolBar from '@/components/ui/MyToolBar.vue';
   import ChatBox from '@/components/ChatBox.vue';
   import LeftSide from '@/components/LeftSide.vue';
-  // import MyButton from '@/components/ui/MyButton.vue';
+import AlertContainer from '../components/AlertContainer.vue';
 
   export default {
     data: () => ({
@@ -84,7 +84,7 @@
         });
       },
     },
-    components: { ChatBox, LeftSide },
+    components: { ChatBox, LeftSide, AlertContainer },
   };
 </script>
 

@@ -184,30 +184,39 @@ io.on('connect', async (socket) => {
 
     socket.on('new chat', async (memberId) => {
       console.log(`new chat execute with memberId = ${memberId}`);
-      const roomUsers = await createPrivateChat(memberId, user);
-      if (roomUsers.length === 0) {
-        console.log('Не вийшло створити новий чат');
-        return;
-      }
-      //const roomId = roomUsers[0].room_id;
-      const members = roomUsers.map((roomUser) => roomUser.member);
-      for (const member of members) {
-        const sendRoom = roomUsers.find((ru) => ru.member === member);
-        const contacts = roomUsers
-          .map((ru) => ru.member)
-          .filter((m) => m !== member);
-        if (activeUsers.has(member)) {
-          const sockets = activeUsers.get(member);
-          for (const s of sockets) {
-            if (s === socket.id) {
-              // ініціатор створення переходить в створену кімнату
-              socket.emit('new chat', sendRoom, true, contacts[0]);
-            } else {
-              // просто додається в перелік кімнат
-              io.in(s).emit('new chat', sendRoom, false, contacts[0]);
+      try {
+        const roomUsers = await createPrivateChat(memberId, user);
+        if (roomUsers.length === 0) {
+          throw new Error('Не вийшло створити новий чат');
+        }
+        const members = roomUsers.map((roomUser) => roomUser.member);
+        for (const member of members) {
+          const sendRoom = roomUsers.find((ru) => ru.member === member);
+          const contacts = roomUsers
+            .map((ru) => ru.member)
+            .filter((m) => m !== member);
+          if (activeUsers.has(member)) {
+            const sockets = activeUsers.get(member);
+            for (const s of sockets) {
+              if (s === socket.id) {
+                // ініціатор створення переходить в створену кімнату
+                socket.emit('new chat', sendRoom, true, contacts[0]);
+              } else {
+                // просто додається в перелік кімнат
+                io.in(s).emit('new chat', sendRoom, false, contacts[0]);
+              }
             }
           }
         }
+      } catch (error) {
+        if (!error.type) {
+          error.type = 'server error';
+        }
+        if (!error.source) {
+          error.source = 'index on new chat';
+          console.log(error);
+        }
+        emit('server error', error);
       }
     });
 
@@ -233,71 +242,99 @@ io.on('connect', async (socket) => {
     let activeRoom;
 
     socket.on('join', async (roomId, callback) => {
-      const rooms = socket.rooms;
-      rooms.forEach((room) => {
-        if (room !== socket.id) {
-          socket.leave(room);
-          console.log(
-            `користувач з id = ${user.id} вийшов з кімнати з id = ${room}.`
-          );
+      try {
+        const rooms = socket.rooms;
+        rooms.forEach((room) => {
+          if (room !== socket.id) {
+            socket.leave(room);
+            console.log(
+              `користувач з id = ${user.id} вийшов з кімнати з id = ${room}.`
+            );
+          }
+        });
+        socket.join(roomId);
+        activeRoom = roomId;
+        console.log(
+          `користувач з id = ${user.id} ввійшов до кімнати з id = ${roomId}.`
+        );
+        const messages = await getMessagesInRoom(roomId);
+        callback(messages, roomId);
+      } catch (error) {
+        if (!error.type) {
+          error.type = 'server error';
         }
-      });
-      socket.join(roomId);
-      activeRoom = roomId;
-      console.log(
-        `користувач з id = ${user.id} ввійшов до кімнати з id = ${roomId}.`
-      );
-      const messages = await getMessagesInRoom(roomId);
-      callback(messages, roomId);
+        if (!error.source) {
+          error.source = 'index on join';
+          console.log(error);
+        }
+        emit('server error', error);
+      }
     });
 
     socket.on('who am i', async (callback) => {
-      console.log(`I am ${user.user_name}`);
-      callback(user);
+      try {
+        callback(user);
+      } catch (error) {
+        if (!error.type) {
+          error.type = 'server error';
+        }
+        if (!error.source) {
+          error.source = 'index on who am i';
+          console.log(error);
+        }
+        emit('server error', error);
+      }
     });
 
     socket.on('contacts', async (userId) => {
-      const contacts = await getContacts(userId);
-      socket.emit('contacts', contacts);
+      try {
+        const contacts = await getContacts(userId);
+        socket.emit('contacts', contacts);
+      } catch (error) {
+        if (!error.type) {
+          error.type = 'server error';
+        }
+        if (!error.source) {
+          error.source = 'index on contacts';
+          console.log(error);
+        }
+        emit('server error', error);
+      }
     });
 
     socket.on('message', async (message) => {
       try {
         const newMessage = await addMessage(message);
         if (Object.keys(newMessage).length === 0) {
-          console.log('Не вдалось записати повідомлення.');
-          console.dir(message);
-          console.dir(user);
-          console.dir({ activeRoom });
-          return;
+          const error = new Error('Не вдалось записати повідомлення.');
+          throw error;
         }
         if (newMessage.author !== user.id) {
-          console.log('Відправник не відповідає поточному користувачу.');
-          console.dir({ userId: user.id, newMessageAuthor: newMessage.author });
-          console.dir(newMessage);
-          console.dir(message);
-          console.dir(user);
-          console.dir({ activeRoom });
-          return;
+          const error = new Error(
+            'Відправник не відповідає поточному користувачу.'
+          );
+          error.type = 'params error';
+          throw error;
         }
         // eslint-disable-next-line camelcase
         newMessage.user_name = user.user_name;
         if (newMessage.destination !== activeRoom) {
-          console.log(
+          const error = new Error(
             'Призначення повідомлення не відповідає активній кімнаті.'
           );
-          console.dir(message);
-          console.dir(newMessage);
-          console.dir(user);
-          console.dir({ activeRoom });
-          return;
+          error.type = 'params error';
+          throw error;
         }
         io.to(activeRoom).emit('message', newMessage);
       } catch (error) {
-        console.dir(error);
-        console.dir(message);
-        console.dir(user);
-        console.dir({ activeRoom });
+        if (!error.type) {
+          error.type = 'server error';
+        }
+        if (!error.source) {
+          error.source = 'index on message';
+          console.log(error);
+        }
+        emit('server error', error);
       }
     });
   } catch (error) {

@@ -16,8 +16,14 @@ async function getContacts(userId) {
     const contacts = await userService.getContacts(userId);
     return contacts;
   } catch (error) {
-    console.dir(error);
-    return [];
+    if (!error.type) {
+      error.type = 'server error';
+    }
+    if (!error.source) {
+      error.source = 'user index getContacts';
+      console.log(error);
+    }
+    throw error;
   } finally {
     if (userService) {
       userService.release();
