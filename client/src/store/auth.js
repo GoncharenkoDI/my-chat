@@ -58,11 +58,6 @@ export default {
         return;
       } catch (error) {
         console.log('loginUser error:', error);
-        dispatch('addAlertMessage', {
-          text: error.message,
-          type: 'danger',
-          caption: 'loginUser error',
-        });
         throw error;
       }
     },

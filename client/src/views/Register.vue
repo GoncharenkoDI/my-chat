@@ -1,5 +1,6 @@
 <template>
   <div class="login">
+    <alert-container />
     <div class="card">
       <div class="card-header">
         <h4 class="card-title">Зареєструватися в vue-chat</h4>
@@ -54,7 +55,9 @@
 </template>
 
 <script>
+import AlertContainer from '../components/AlertContainer.vue';
 export default {
+  components: { AlertContainer },
   name: 'Login',
   data() {
     return {
@@ -65,17 +68,25 @@ export default {
   },
   methods: {
     async submitForm() {
-      await this.$store.dispatch('registerUser', {
-        login: this.login,
-        password: this.password,
-        username: this.username,
-      });
-      this.login = '';
-      this.password = '';
-      this.username = '';
-      this.$router.push({
-        path: '/',
-      });
+      try {
+        await this.$store.dispatch('registerUser', {
+          login: this.login,
+          password: this.password,
+          username: this.username,
+        });
+        this.login = '';
+        this.password = '';
+        this.username = '';
+        this.$router.push({
+          path: '/',
+        });
+      } catch (error) {
+        this.$store.dispatch('addAlertMessage', {
+          text: error.message,
+          type: 'danger',
+          caption: 'Register user error',
+        });
+      }
     },
     loginClick() {
       this.$router.push({

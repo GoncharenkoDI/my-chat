@@ -68,7 +68,13 @@ export default {
         this.$router.push({
           path: '/',
         });
-      } catch (error) {}
+      } catch (error) {
+        this.$store.dispatch('addAlertMessage', {
+          text: error.message,
+          type: 'danger',
+          caption: 'loginUser error',
+        });
+      }
     },
     registerClick() {
       this.$router.push({
