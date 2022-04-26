@@ -1,6 +1,6 @@
 export default {
   state: {
-    currentUser: null
+    currentUser: null,
   },
   getters: {},
   mutations: {
@@ -10,13 +10,13 @@ export default {
     },
     logout(state) {
       state.currentUser = null;
-    }
+    },
   },
   actions: {
     async testUserByEmail({ dispatch }, { email }) {
       try {
         const response = await dispatch('request', {
-          url: `/api/auth/email/${email}`
+          url: `/api/auth/email/${email}`,
         }); // true | false
         return response;
       } catch (error) {
@@ -32,8 +32,8 @@ export default {
           method: 'POST',
           body: user,
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         }); // повертає 200 { id, login, username, state }
         commit('setCurrentUser', newUser);
         return;
@@ -50,14 +50,19 @@ export default {
           method: 'POST',
           body: data,
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         }); // повертає { id, login, user_name, state, created_at, modified_at }
         //console.log(user);
         commit('setUser', user);
         return;
       } catch (error) {
         console.log('loginUser error:', error);
+        dispatch('addAlertMessage', {
+          text: error.message,
+          type: 'danger',
+          caption: 'loginUser error',
+        });
         throw error;
       }
     },
@@ -67,8 +72,8 @@ export default {
           url: '/api/logout',
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         });
         commit('logout');
       } catch (error) {
@@ -80,7 +85,7 @@ export default {
       try {
         const user = await dispatch('request', {
           url: `/api/auth/user/${uuid}`,
-          method: 'GET'
+          method: 'GET',
         }); // повертає 200 user = { uuid: user.uuid, email: user.email, user_name: user.user_name, role: user.role, avatar: avatar } || {}
         return user;
       } catch (error) {
@@ -92,7 +97,7 @@ export default {
       try {
         const profile = await dispatch('request', {
           url: `/api/auth/profile/${uuid}`,
-          method: 'GET'
+          method: 'GET',
         });
         return profile;
       } catch (error) {
@@ -105,7 +110,7 @@ export default {
         const result = await dispatch('request', {
           url: '/api/auth/avatar/upload/',
           method: 'POST',
-          body: formData
+          body: formData,
         });
         return result;
       } catch (error) {
@@ -132,19 +137,19 @@ export default {
           method: 'PUT',
           body: { user_name, description, avatarFileName },
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+          },
         });
 
         commit('updateProfile', {
           user_name: result.user_name,
           description: result.description,
-          avatar: result.avatar
+          avatar: result.avatar,
         });
       } catch (error) {
         console.log('updateProfile error: ', error);
         throw error;
       }
-    }
-  }
+    },
+  },
 };

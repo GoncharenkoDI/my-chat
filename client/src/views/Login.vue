@@ -1,5 +1,6 @@
 <template>
   <div class="login">
+    <alert-container />
     <div class="card">
       <div class="card-header">
         <h4 class="card-title">Приєднатися до vue-chat</h4>
@@ -45,7 +46,9 @@
 </template>
 
 <script>
+import AlertContainer from '../components/AlertContainer.vue';
 export default {
+  components: { AlertContainer },
   name: 'Login',
   data() {
     return {
@@ -55,26 +58,17 @@ export default {
   },
   methods: {
     async submitForm() {
-      await this.$store.dispatch('loginUser', {
-        login: this.login,
-        password: this.password,
-      });
-      this.login = '';
-      this.password = '';
-      // this.$store.dispatch('setUserRooms');
-      // const rooms = this.$store.state.rooms;
-      // if (rooms.length === 0) {
-      //   console.error('Ви не зареєстровані в жодній з кімнат');
-      //   return;
-      // }
-      // this.$store.commit('setRoom', rooms[0]);
-      // this.$store.dispatch(
-      //   'newConnection',
-      //   this.$store.state.auth.currentUser.login
-      // );
-      this.$router.push({
-        path: '/',
-      });
+      try {
+        await this.$store.dispatch('loginUser', {
+          login: this.login,
+          password: this.password,
+        });
+        this.login = '';
+        this.password = '';
+        this.$router.push({
+          path: '/',
+        });
+      } catch (error) {}
     },
     registerClick() {
       this.$router.push({

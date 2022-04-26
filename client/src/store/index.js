@@ -29,6 +29,9 @@ export default new Vuex.Store({
     messages: [],
     contacts: [],
     connectionError: null,
+    alertShowTime: 0,
+    alertMessages: [],
+    alertId: 0,
   },
   mutations: {
     setUser(state, user) {
@@ -102,6 +105,18 @@ export default new Vuex.Store({
      */
     setContact(state, contact) {
       state.contact = contact;
+    },
+    addAlertMessage(state, message) {
+      console.log(' commit addAlertMessage ', JSON.stringify(message));
+      state.alertMessages.push(message);
+    },
+    removeAlertMessage(state, messageId) {
+      state.alertMessages = state.alertMessages.filter(
+        (m) => m.id !== messageId
+      );
+    },
+    incAlertId(state) {
+      state.alertId++;
     },
   },
   getters: {
@@ -308,6 +323,15 @@ export default new Vuex.Store({
       console.log(`newChat ${memberId}`);
       const socket = state.socket;
       socket.emit('new chat', memberId);
+    },
+    addAlertMessage({ commit, state }, { text, type, caption }) {
+      const id = state.alertId;
+      console.dir({ id, text, type, caption });
+      commit('addAlertMessage', { id, text, type, caption });
+      commit('incAlertId');
+    },
+    removeAlertMessage({ commit }, messageId) {
+      commit('removeAlertMessage', messageId);
     },
   },
   modules: {

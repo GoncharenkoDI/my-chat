@@ -11,8 +11,14 @@
 <script>
 export default {
   name: 'AlertMessage',
-  props: { message: Object },
+  props: { message: Object, showTime: Number },
   computed: {},
+  mounted() {
+    if (this.showTime && this.showTime > 0 )
+    setTimeout(() => {
+      this.closeMessage();
+    }, this.showTime)
+  },
   methods: {
     messageClass(type) {
       return 'alert-' + type;
@@ -31,6 +37,7 @@ export default {
   background-color: #f5f5f5;
   margin: 0 0 0.5rem 0;
   color: rgb(0, 0, 0);
+  transition: 1s opacity;
 }
 .alert-title {
   font-size: 1.2em;
