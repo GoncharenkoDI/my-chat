@@ -1,6 +1,8 @@
 <template>
   <div class="chat-box">
-    <my-tool-bar> <p>toolbar</p> </my-tool-bar>
+    <my-tool-bar>
+      <p class="info">контакт: {{ contactName }}</p>
+    </my-tool-bar>
     <div class="message-list" ref="messages">
       <div class="messages-wrapper">
         <div class="buttons">
@@ -18,13 +20,19 @@
 <script>
 export default {
   props: [],
-  data: function() {
+  data: function () {
     return {};
   },
   computed: {
     contact() {
       return this.$store.state.contact;
-    }
+    },
+    contactName() {
+      const contact = this.$store.state.contact;
+      const name =
+        contact && contact.user_name ? contact.user_name : 'не визначено';
+      return name;
+    },
   },
   mounted() {},
   updated() {},
@@ -34,11 +42,11 @@ export default {
         this.$store.dispatch('newChat', this.contact.id);
       }
       this.$router.push({
-        path: '/'
+        path: '/',
       });
-    }
+    },
   },
-  components: {}
+  components: {},
 };
 </script>
 
@@ -79,5 +87,8 @@ export default {
 .buttons {
   background: #2780e3;
   padding: 1rem 0.6rem;
+}
+.info {
+  color: #fff;
 }
 </style>

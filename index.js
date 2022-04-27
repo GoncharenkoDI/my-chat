@@ -243,7 +243,14 @@ io.on('connect', async (socket) => {
 
     socket.on('join', async (roomId, callback) => {
       try {
+        /**
+         * @type { Array }
+         * @description socket.rooms - масив, в якому міститься
+         * перелік всіх кімнат в яких зареєстрований цей сокет і id
+         * цього сокета
+         */
         const rooms = socket.rooms;
+        /** виходимо зі всіх кімнат */
         rooms.forEach((room) => {
           if (room !== socket.id) {
             socket.leave(room);

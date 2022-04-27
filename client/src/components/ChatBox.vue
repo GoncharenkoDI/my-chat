@@ -1,6 +1,8 @@
 <template>
   <div class="chat-box">
-    <my-tool-bar> <p>toolbar</p> </my-tool-bar>
+    <my-tool-bar>
+      <p class="chat-info">чат: {{ roomName }}</p>
+    </my-tool-bar>
     <div class="message-list" ref="messages">
       <div class="messages-wrapper">
         <Message
@@ -33,9 +35,9 @@
 import Message from '@/components/Message.vue';
 export default {
   props: [],
-  data: function() {
+  data: function () {
     return {
-      text: ''
+      text: '',
     };
   },
   computed: {
@@ -54,11 +56,16 @@ export default {
     user() {
       return this.$store.state.user;
     },
+    roomName() {
+      const room = this.room;
+      const name = room && room.room_name ? room.room_name : 'не обрано';
+      return name;
+    },
     enabledSend() {
       const hasRoom = Object.keys(this.room).length;
       const hasUser = Object.keys(this.user).length;
       return hasRoom && hasUser;
-    }
+    },
   },
   mounted() {
     this.scrollToEnd();
@@ -73,15 +80,15 @@ export default {
       this.text = '';
     },
     sendMessage(text) {
-      console.log(`повідослення з текстом ${text} відправлено.`);
+      console.log(`повідомлення з текстом ${text} відправлено.`);
       this.$store.dispatch('sendMessage', text);
     },
     scrollToEnd() {
       var content = this.$refs.messages;
       content.scrollTop = content.scrollHeight;
-    }
+    },
   },
-  components: { Message }
+  components: { Message },
 };
 </script>
 
@@ -118,5 +125,8 @@ export default {
 .messages-wrapper {
   height: auto;
   padding: 1.5rem 0;
+}
+.chat-info {
+  color: #fff;
 }
 </style>
