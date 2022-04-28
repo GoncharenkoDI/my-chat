@@ -26,6 +26,7 @@ export default new Vuex.Store({
     room: {},
     rooms: [],
     socket: null,
+    /** @type Array */
     messages: [],
     contacts: [],
     connectionError: null,
@@ -85,6 +86,15 @@ export default new Vuex.Store({
     },
     addMessage(state, message) {
       state.messages.push(message);
+    },
+    updateMessage(state, message) {
+      if (!message || !message.id) return;
+      const id = message.id;
+      /**@type Array */
+      const messages = state.messages;
+      const index = messages.findIndex((m) => m.id === id);
+      if (index === -1) state.messages.push(message);
+      else state.messages[index] = messages;
     },
     setConnectionError(state, error) {
       state.connectionError = error;
@@ -190,7 +200,7 @@ export default new Vuex.Store({
 
         socket.on('message', (message) => {
           console.log(`on message ${JSON.stringify(message)}`);
-          commit('addMessage', message);
+          commit('updateMessage', message);
         });
 
         socket.on('new chat', (sendRoom, isOwner, contact) => {
