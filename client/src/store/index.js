@@ -5,6 +5,16 @@ import io from 'socket.io-client';
 
 import http from './http';
 import auth from './auth';
+import {
+  onRooms,
+  onUser,
+  onContacts,
+  onMessage,
+  onNewChat,
+  onConnectError,
+  onDisconnect,
+  onServerError,
+} from './eventHandlers.js';
 
 Vue.use(Vuex);
 
@@ -110,8 +120,8 @@ export default new Vuex.Store({
     },
     /**
      * @param {*} state
-     * @param { {id: number, login: string, user_name: string, state: string, created_at: Date, modified_at: Date
-     * } } contact
+     * @param { {id: number, login: string, user_name: string, state: string,
+     * created_at: Date, modified_at: Date * } } contact
      */
     setContact(state, contact) {
       state.contact = contact;
@@ -158,112 +168,35 @@ export default new Vuex.Store({
           });
           commit('setSocket', socket);
         } else {
-          console.log("З'єднання НЕ встановлено");
+          console.log('З`єднання НЕ встановлено');
           commit('setSocket', null);
         }
-
-        socket.on(
-          'rooms',
-          /** Перелік кімнат з сервера для користувача
-           * @param {[{room_id : string, member: number, room_name: string,
-           * created_at:Date, modified_at:Date}]} rooms
-           */
-          (rooms) => {
-            console.log(`on rooms ${JSON.stringify(rooms)}`);
-            commit('setRooms', rooms);
-          }
+        socket.on('rooms', (rooms) => onRooms(rooms, commit));
+        socket.on('user', (user) => onUser(user, commit));
+        socket.on('contacts', (contacts) =>
+          onContacts(contacts, state, commit)
         );
-
-        socket.on(
-          'user',
-          /**
-           * @param { {id : number, login: string, user_name: string,
-           * state: number, created_at:Date, modified_at:Date} } user
-           */
-          (user) => {
-            console.log(`on i am is ${JSON.stringify(user)}`);
-            commit('setUser', user);
-          }
-        );
-
-        socket.on('contacts', (contacts) => {
-          console.log(`on contacts ${JSON.stringify(contacts)}`);
-          const contact = state.contact;
-          if (Object.keys(contact) !== 0) {
-            const index = contacts.findIndex((c) => c.id === contact.id);
-            if (index === -1) {
-              commit('setContact', {});
-            }
-          }
-          commit('setContacts', contacts);
-        });
-
-        socket.on('message', (message) => {
-          console.log(`on message ${JSON.stringify(message)}`);
-          commit('updateMessage', message);
-        });
-
+        socket.on('message', (message) => onMessage(message, commit));
         socket.on('new chat', (sendRoom, isOwner, contact) => {
-          console.log(
-            `on new chat.
-              Room- ${JSON.stringify(sendRoom)},
-              isOwner- ${isOwner},
-              contact- ${JSON.stringify(contact)}`
-          );
-
-          commit('addRoom', sendRoom);
-          commit('removeContact', contact);
-          if (isOwner) {
-            state.socket.emit('join', sendRoom.room_id, (messages, roomId) => {
-              console.log(`join відповідь повідомлення - ${JSON.stringify(
-                messages
-              )},
-              кімната - ${roomId}`);
-              const room = state.rooms.find((r) => r.room_id === roomId);
-              if (room) {
-                commit('setRoom', room);
-                commit('setMessages', messages);
-              } else {
-                commit('setRoom', {});
-                commit('setMessages', []);
-              }
-            });
-          }
+          onNewChat(sendRoom, isOwner, contact, commit, state);
         });
       });
 
-      socket.on('connect_error', async (error) => {
-        console.log(`Відбулась помилка з\'єднання: ${error.message}!`);
-        if (error.message === 'unauthorized') {
-          socket.disconnect(true);
-        }
-        commit('setConnectionError', error.message);
-      });
-
-      socket.on('disconnect', async (reason) => {
-        console.log(`З\'єднання розірване, причина - ${reason}.`);
-        commit('setUser', {});
-        commit('setContact', {});
-        commit('setRoom', {});
-        commit('setRooms', []);
-        commit('setMessages', []);
-        commit('setContacts', []);
-        commit('setSocket', null);
-      });
-
-      socket.on('server error', (error) => {
-        console.error(error);
-      });
+      socket.on('connect_error', async (error) =>
+        onConnectError(error, socket, commit)
+      );
+      socket.on('disconnect', async (reason) => onDisconnect(reason, commit));
+      socket.on('server error', (error) => onServerError(error));
     },
     changeRoom({ commit, state }, roomId) {
       console.log('change room', roomId);
       const socket = state.socket;
       if (!socket) {
-        console.log("Відсутнє з'єднання1");
+        console.log('Відсутнє з`єднання1');
         return;
       }
       if (!socket.connected) {
-        console.log("Відсутнє з'єднання2");
+        console.log('Відсутнє з`єднання2');
         return;
       }
       const room = state.rooms.find((r) => r.room_id === roomId);
@@ -294,11 +227,11 @@ export default new Vuex.Store({
       }
       const socket = state.socket;
       if (!socket) {
-        console.log("Відсутнє з'єднання1");
+        console.log('Відсутнє з`єднання1');
         return;
       }
       if (!socket.connected) {
-        console.log("Відсутнє з'єднання2");
+        console.log('Відсутнє з`єднання2');
         return;
       }
       const room = state.room;
