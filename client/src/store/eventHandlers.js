@@ -84,6 +84,6 @@ export function onDisconnect(reason, commit) {
 }
 
 export function onServerError(error) {
-  console.error(error);
+  console.error(`on server error ${error}`);
   return;
 }
