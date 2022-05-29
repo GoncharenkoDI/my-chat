@@ -3,15 +3,14 @@
     <alert-container />
     <div class="card">
       <div class="card-header">
-        <h4 class="card-title">Приєднатися до vue-chat</h4>
+        <h4 class="card-title">Vue-chat</h4>
       </div>
       <form action="" class="login-form" @submit.prevent="submitForm">
         <div class="card-body">
           <my-input
             class="login-input"
             type="text"
-            placeholder="login"
-            label="login"
+            placeholder="Логін"
             layout="horizontal-left"
             label-width="10rem"
             v-model="login"
@@ -19,26 +18,25 @@
           <my-input
             class="login-input"
             type="password"
-            label="password"
-            placeholder="password"
+            placeholder="Пароль"
             layout="horizontal-left"
             label-width="10rem"
             v-model="password"
           />
         </div>
         <div class="card-footer">
-          <my-button
-            caption="Приєднатися"
-            icon-name="key"
-            class="btn"
-            btn-type="submit"
-          />
-          <my-button
-            caption="Зареєструватися"
-            icon-name="user-secret"
-            class="btn-link"
-            @click.native="registerClick"
-          />
+          <my-button caption="Приєднатися" class="btn" btn-type="submit" />
+          <div class="register">
+            <label for="btn-register" class="label-link">
+              Не маєте акаунту?
+            </label>
+            <my-button
+              caption="Реєстрація"
+              class="btn-link"
+              id="btn-register"
+              @click.native="registerClick"
+            />
+          </div>
         </div>
       </form>
     </div>
@@ -86,49 +84,21 @@ export default {
 </script>
 
 <style scoped>
-.login {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  background: white;
-  color: #373a3c;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-.card {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #2fa4e7;
-  width: 32rem;
-}
-.card-header {
-  padding: 1rem;
-  border-bottom: 1px solid #2fa4e7;
-  text-align: center;
-  background: #e9ecef;
-}
-.card-title {
-  font-size: 1.2;
-  color: #2fa4e7;
-}
-.card-body {
-  padding: 0.5rem 1rem;
-}
-.login-input {
-  margin-bottom: 1rem;
-}
-.card-footer {
-  padding: 1rem;
-  border-top: 1px solid #2fa4e7;
-  background: #e9ecef;
-}
 .btn {
-  color: #2fa4e7;
-  border-color: #2fa4e7;
+  color: #ffffff;
+  background-color: #00a35c;
+  font-size: 1.8rem;
+  border-radius: 0.5rem;
+  border: none;
+  padding: 1.2rem 1.8rem !important;
+  font-weight: 600 !important;
 }
 .btn-link {
-  color: #2fa4e7;
-  border: none;
+  color: #00a35c;
+  border: 2px solid #00a35c;
+  font-size: 1.8rem;
+  border-radius: 0.5rem;
+  padding: 1.2rem 1.8rem !important;
+  font-weight: 600 !important;
 }
 </style>

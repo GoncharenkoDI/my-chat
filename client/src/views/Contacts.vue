@@ -3,6 +3,7 @@
     <div class="navbar">
       <div>
         <my-button
+          id="active-switch"
           :icon-name="iconName"
           class="btn"
           @click.native="changeLeftActive"
@@ -10,7 +11,11 @@
       </div>
       <p class="user-info">Користувач: {{ userName }}</p>
       <div>
-        <my-button icon-name="user" class="btn" @click.native="logout" />
+        <my-button
+          icon-name="sign-out-alt"
+          class="btn"
+          @click.native="logout"
+        />
       </div>
     </div>
     <div v-if="!socket">Ви не під'єднані до програми</div>

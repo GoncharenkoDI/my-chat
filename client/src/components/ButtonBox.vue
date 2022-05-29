@@ -1,6 +1,6 @@
 <template>
   <div class="chat-box">
-    <my-tool-bar>
+    <my-tool-bar class="tool-bar">
       <p class="info">контакт: {{ contactName }}</p>
     </my-tool-bar>
     <div class="message-list" ref="messages">
@@ -85,7 +85,7 @@ export default {
   align-items: center;
 }
 .buttons {
-  background: #2780e3;
+  background: #00a36c;
   padding: 1rem 0.6rem;
 }
 .info {

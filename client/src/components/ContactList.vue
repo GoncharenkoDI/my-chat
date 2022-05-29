@@ -1,8 +1,7 @@
 <template>
   <div class="left-side" :class="{ active: isActive }">
-    <my-tool-bar>
-      <my-button icon-name="address-card" class="btn" @click.native="goHome" />
-      <my-input placeholder="Пошук" layout="inline" />
+    <my-tool-bar class="tool-bar">
+      <my-button caption="список чатів" class="btn" @click.native="goHome" />
     </my-tool-bar>
     <div class="contact-list">
       <p v-if="contactsCount === 0">Доступні контакти відсутні</p>
@@ -31,7 +30,7 @@ export default {
     },
     contactsCount() {
       return this.$store.state.contacts.length;
-    }
+    },
   },
   methods: {
     isActiveContact(id) {
@@ -42,11 +41,11 @@ export default {
     },
     goHome() {
       this.$router.push({
-        path: '/'
+        path: '/',
       });
-    }
+    },
   },
-  components: {}
+  components: {},
 };
 </script>
 
@@ -55,6 +54,7 @@ export default {
   background: none;
   color: #dee2e6;
   border: 1px solid #dee2e6;
+  width: 100%;
 }
 .btn:hover {
   color: #fff;

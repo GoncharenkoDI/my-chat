@@ -2,16 +2,18 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font: inherit;
 }
 
 html {
   font-size: 10px;
+  font-family: 'Source Sans Pro', sans-serif;
 }
 
 #main {
   display: flex;
   font-size: 1.6rem;
-  padding: 1.5rem;
+  padding: 0;
   height: 100vh;
   max-height: 100vh;
   min-height: 100vh;
@@ -21,6 +23,7 @@ html {
   flex-direction: column;
   overflow: hidden;
   margin: 0 auto;
+  font-family: 'Source Sans Pro', sans-serif !important;
 }
 
 #main .wrapper {
@@ -38,7 +41,7 @@ html {
   align-items: center;
   height: 4.8rem !important;
   padding: 0.5rem 1rem;
-  background: #2780e3;
+  background: #00a36c;
   flex-grow: 0;
   border-bottom: 1px solid #e9ecef;
 }
@@ -53,7 +56,13 @@ html {
   background: white;
   color: #373a3c;
 }
-
+.toolbar.tool-bar {
+  background-color: #00a36c !important;
+  width: 100%;
+}
+#active-switch {
+  display: none;
+}
 .left-side {
   display: flex;
   flex-direction: column;
@@ -66,7 +75,7 @@ html {
   background: white;
   color: #373a3c;
   border-right: 1px solid #e9ecef;
-  transition: left 2s linear 0.1s;
+  transition: left 1s linear 0.1s;
   /* position: absolute;
   top: 0;
   left: -30rem; */
@@ -85,6 +94,60 @@ html {
   overflow: auto;
   height: calc(100% - 4.8rem);
 }
+.login {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background: white;
+  color: #373a3c;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 42rem;
+  font-size: 1.8rem;
+}
+.card-header {
+  padding: 1rem;
+  text-align: center;
+  background: #ffffff;
+  margin-bottom: 1rem;
+}
+.card-title {
+  font-size: 4.2rem;
+  font-weight: 600 !important;
+  color: #00a35c;
+}
+.card-body {
+  padding: 0.5rem 1rem;
+  font-size: 1.8rem;
+}
+.login-input {
+  margin-bottom: 2rem;
+  font-size: 1.8rem !important;
+  font-weight: 300 !important;
+  border-radius: 0.5rem !important;
+}
+.card-footer {
+  padding: 1rem;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.8rem;
+}
+.register {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  font-size: 1.8rem;
+  padding: 2rem 0.5rem 0 0.5rem;
+  align-items: center;
+}
+
 @media (max-width: 768px) {
   .left-side {
     display: flex;
@@ -107,6 +170,9 @@ html {
   .left-side.active {
     left: 0;
   }
+  #active-switch {
+    display: inline-block;
+  }
 }
 .room {
   padding: 15px;
@@ -116,7 +182,7 @@ html {
 }
 
 .room.active {
-  background: #2780e3;
+  background: #00a36c;
   color: #fff;
 }
 .contact {
@@ -127,7 +193,7 @@ html {
 }
 
 .contact.active {
-  background: #2780e3;
+  background: #00a36c;
   color: #fff;
 }
 
@@ -152,7 +218,7 @@ html {
   align-items: center;
   height: 4.8rem !important;
   padding: 0.5rem 1rem;
-  background: #2780e3;
+  background: #00a36c;
 }
 
 .messages-container {
@@ -188,7 +254,7 @@ html {
 .author {
   display: flex;
   align-items: center;
-  font-family: Helvetica;
+  font-family: 'Source Sans Pro', sans-serif;
   color: #828282;
   letter-spacing: 0.3px;
 }
@@ -205,4 +271,16 @@ html {
 .btn:hover {
   color: #fff;
   border: 1px solid #fff;
+}
+
+.login-input input {
+  font-size: 1.8rem !important;
+  font-weight: 300 !important;
+  background-color: #e1e1e1;
+  color: #5d5d5d;
+  padding: 1.2rem 1.8rem !important;
+  border-radius: 0.5rem !important;
+}
+.login-input input:focus {
+  border-bottom-color: #5d5d5d !important;
 }

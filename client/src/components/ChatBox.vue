@@ -1,6 +1,6 @@
 <template>
   <div class="chat-box">
-    <my-tool-bar>
+    <my-tool-bar class="tool-bar">
       <p class="chat-info">чат: {{ roomName }}</p>
     </my-tool-bar>
     <div class="message-list" ref="messages">
@@ -12,7 +12,7 @@
         />
       </div>
     </div>
-    <my-tool-bar>
+    <my-tool-bar class="tool-bar">
       <form class="form" action="#" @submit.prevent="formSubmit">
         <my-input
           placeholder="Повідомлення"
@@ -35,7 +35,7 @@
 import Message from '@/components/Message.vue';
 export default {
   props: [],
-  data: function () {
+  data: function() {
     return {
       text: '',
     };

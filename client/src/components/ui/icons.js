@@ -12,6 +12,7 @@ import {
   faAddressCard,
   faHandshake,
   faTimes,
+  faSignOutAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 export default [
@@ -28,4 +29,5 @@ export default [
   faAddressCard,
   faHandshake,
   faTimes,
+  faSignOutAlt,
 ];

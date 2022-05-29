@@ -119,22 +119,21 @@ class User extends Model {
       if (
         login.length < minLength ||
         password.length < minLength ||
-        username.length < minLength
+        username.length < 1
       ) {
         const error = new Error('');
         error.type = 'check params';
         if (login.length < minLength) {
-          error.message = `login повинен бути не менше ${minLength} символів.`;
+          error.message = `Пароль повинен бути не менше ${minLength} символів.`;
           throw error;
         }
         if (password.length < minLength) {
-          error.message = `password повинен бути не менше ${minLength}
+          error.message = `Пароль повинен бути не менше ${minLength}
           символів.`;
           throw error;
         }
-        if (username.length < minLength) {
-          error.message = `username повинен бути не менше ${minLength}
-          символів.`;
+        if (username.length < 1) {
+          error.message = `Ім'я користувача повинено бути заповнене.`;
           throw error;
         }
       }

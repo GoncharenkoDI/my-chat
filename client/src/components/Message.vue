@@ -1,6 +1,6 @@
 <template>
   <div v-if="isSentByCurrentUser" class="messageContainer justifyEnd">
-    <p class="sentText pr-10">{{ authorName }}</p>
+    <p class="sentText pr-10"></p>
     <div class="messageBox backgroundBlue">
       <p class="messageText colorWhite">{{ this.message.text }}</p>
     </div>
@@ -9,7 +9,7 @@
     <div class="messageBox backgroundLight">
       <p class="messageText colorDark">{{ this.message.text }}</p>
     </div>
-    <p class="sentText pr-10">{{ authorName }}</p>
+    <p class="sentText pr-10"></p>
   </div>
 </template>
 
@@ -26,15 +26,15 @@ export default {
         return 'від мене';
       }
       return `від ${this.message.user_name}`;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 .messageBox {
   background: #f3f3f3;
-  border-radius: 20px;
+  border-radius: 5px;
   padding: 5px 20px;
   color: white;
   display: inline-block;
@@ -93,7 +93,7 @@ export default {
 }
 
 .backgroundBlue {
-  background: #2979ff;
+  background: #00a36c;
 }
 
 .backgroundLight {
