@@ -76,7 +76,7 @@ class Model {
     }
   }
 
-  /**
+  /** видаляє рядки з таблиці
    * @param { { key: value } } params параметри пошуку key = value
    * @returns { Promise< number > } Повертає кількість рядків, які були видалені
    */
@@ -102,11 +102,11 @@ class Model {
     }
   }
 
-  /**
+  /** повертає результат операції insert в БД
    * @param { { key: value } } columns - колонки таблиці та їх значення
    * @param { [ string ] } returning - перелік колонок,
    * які повертаються користувачу
-   * @returns { Promise<object> } повертає результат операції insert в БД
+   * @returns { Promise<object> }
    */
   async insert(columns, returning = []) {
     try {
