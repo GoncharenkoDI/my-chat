@@ -10,15 +10,16 @@
     <div class="room-list">
       <p v-if="roomsCount === 0">Ви не зареєстровані в жодній кімнаті</p>
       <div v-else class="contacts">
-        <p
+        <div
           v-for="room in $store.state.rooms.values()"
           :key="room.room_id"
           class="room"
           :class="{ active: isActiveRoom(room.room_id) }"
           @click.prevent="changeRoom(room.room_id)"
         >
-          {{ room.room_name }}
-        </p>
+          <img :src="avatarName" alt="Аватар" />
+          <p>{{ room.room_name }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -41,6 +42,9 @@ export default {
     },
     roomsCount() {
       return this.rooms.length;
+    },
+    avatarName() {
+      return 'avatars/avatar-icon-116137-1938.png';
     },
   },
   methods: {

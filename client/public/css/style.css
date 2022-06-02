@@ -175,16 +175,31 @@ html {
   }
 }
 .room {
-  padding: 15px;
+  padding: 2px;
   background: #e9ecef;
   margin-bottom: 8px;
   cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 .room.active {
   background: #00a36c;
   color: #fff;
 }
+
+.room img {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+
+.room p {
+  margin-left: 15px;
+}
+
 .contact {
   padding: 15px;
   background: #e9ecef;
