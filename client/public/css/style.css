@@ -184,13 +184,25 @@ html {
   flex-wrap: nowrap;
   align-items: center;
 }
-
+.user-info {
+  padding: 2px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+}
 .room.active {
   background: #00a36c;
   color: #fff;
 }
 
 .room img {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+.user-info img {
   display: block;
   width: 48px;
   height: 48px;

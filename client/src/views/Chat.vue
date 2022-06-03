@@ -9,7 +9,10 @@
           @click.native="changeLeftActive"
         />
       </div>
-      <p class="user-info">Користувач: {{ userName }}</p>
+      <div class="user-info">
+        <img :src="'avatars/' + avatarName" alt="Аватар" />
+        <p>{{ userName }}</p>
+      </div>
       <div>
         <my-button
           icon-name="sign-out-alt"
@@ -55,6 +58,9 @@ export default {
     userName() {
       const user = this.$store.state.user ? this.$store.state.user : {};
       return user.user_name ? user.user_name : '';
+    },
+    avatarName() {
+      return 'avatar-icon-116137-1938.png';
     },
   },
   watch: {

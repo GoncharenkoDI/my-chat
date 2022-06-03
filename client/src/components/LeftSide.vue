@@ -17,7 +17,7 @@
           :class="{ active: isActiveRoom(room.room_id) }"
           @click.prevent="changeRoom(room.room_id)"
         >
-          <img :src="avatarName" alt="Аватар" />
+          <img :src="'avatars/' + avatarName" alt="Аватар" />
           <p>{{ room.room_name }}</p>
         </div>
       </div>
@@ -44,7 +44,7 @@ export default {
       return this.rooms.length;
     },
     avatarName() {
-      return 'avatars/avatar-icon-116137-1938.png';
+      return 'avatar-icon-116137-1938.png';
     },
   },
   methods: {

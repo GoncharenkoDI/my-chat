@@ -4,6 +4,15 @@ const db = require('../db/index');
 const Model = require('../db/Model');
 const bcrypt = require('bcrypt');
 const SALT = +process.env.SALT;
+const USER_COLUMNS_SET = [
+  'id',
+  'login',
+  'user_name',
+  'avatar',
+  'state',
+  'created_at',
+  'modified_at',
+];
 class User extends Model {
   constructor(client) {
     super(client, 'public.users');
@@ -33,10 +42,7 @@ class User extends Model {
    */
   async findUser(params) {
     try {
-      const user = await this.findOne(
-        ['id', 'login', 'user_name', 'state', 'created_at', 'modified_at'],
-        params
-      );
+      const user = await this.findOne(USER_COLUMNS_SET, params);
       return user;
     } catch (error) {
       if (!error.type) {
@@ -58,10 +64,10 @@ class User extends Model {
    */
   async getUserById(userId) {
     try {
-      const user = await this.findOne(
-        ['id', 'login', 'user_name', 'state', 'created_at', 'modified_at'],
-        { id: userId, state: 0 }
-      );
+      const user = await this.findOne(USER_COLUMNS_SET, {
+        id: userId,
+        state: 0,
+      });
       return user;
     } catch (error) {
       if (!error.type) {
@@ -144,7 +150,7 @@ class User extends Model {
           await this.insert(
             // eslint-disable-next-line camelcase
             { login, password: hashPassword, user_name: username, state: 0 },
-            ['id', 'login', 'user_name', 'state', 'created_at', 'modified_at']
+            USER_COLUMNS_SET
           );
       return user;
     } catch (error) {
@@ -168,7 +174,7 @@ class User extends Model {
    */
   async getContacts(userId) {
     try {
-      const sql = `select id, login, user_name, state, created_at, modified_at
+      const sql = `select  ${USER_COLUMNS_SET.join(',')}
         from public.contacts
         where "owner" = $1`;
       const { rows } = await this.query(sql, [userId]);
