@@ -137,7 +137,7 @@ io.on('connect', async (socket) => {
     }
     /**
      * @type {{id : number, login: string, user_name: string,
-     * state: number, created_at:Date, modified_at:Date}}
+     * avatar: string; state: number, created_at:Date, modified_at:Date}}
      */
     const user = socket.request.user;
 

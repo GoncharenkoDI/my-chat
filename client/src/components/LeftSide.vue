@@ -17,7 +17,7 @@
           :class="{ active: isActiveRoom(room.room_id) }"
           @click.prevent="changeRoom(room.room_id)"
         >
-          <img :src="'avatars/' + avatarName" alt="Аватар" />
+          <img :src="`avatars/${room.avatar}`" alt="А" />
           <p>{{ room.room_name }}</p>
         </div>
       </div>

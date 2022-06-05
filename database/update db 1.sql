@@ -1,5 +1,7 @@
 ALTER TABLE IF EXISTS public.users
     ADD COLUMN avatar character varying(128) COLLATE pg_catalog."default";
+ALTER TABLE IF EXISTS public.room_users
+    ADD COLUMN avatar character varying(128) COLLATE pg_catalog."default";
 
 CREATE OR REPLACE VIEW public.contacts
  AS
@@ -17,5 +19,5 @@ CREATE OR REPLACE VIEW public.contacts
   WHERE rm.room_id IS NULL
   ORDER BY u1.id;
 
-ALTER TABLE public.contacts
-    OWNER TO postgres;
+UPDATE public.users SET avatar = 'avatar-icon-116137-1938.png';
+UPDATE public.room_users SET avatar = 'avatar-icon-116137-1938.png';

@@ -13,6 +13,7 @@ const USER_COLUMNS_SET = [
   'created_at',
   'modified_at',
 ];
+const DEFAULT_AVATAR = 'avatar-icon-116137-1938.png';
 class User extends Model {
   constructor(client) {
     super(client, 'public.users');
@@ -37,7 +38,7 @@ class User extends Model {
   /** користувач за його логіном
    * @param { {key: value} } params
    * @returns {Promise<{id : number, login: string, user_name: string,
-   * state: number, created_at:Date, modified_at:Date}>
+   * avatar: string, state: number, created_at:Date, modified_at:Date}>
    * } користувач за його логіном
    */
   async findUser(params) {
@@ -59,7 +60,7 @@ class User extends Model {
   /** користувач за його id
    * @param { number } userId
    * @returns {Promise<{id : number, login: string, user_name: string,
-   * state: number, created_at:Date, modified_at:Date}>
+   * avatar: string, state: number, created_at:Date, modified_at:Date}>
    * } користувач за його id або {}
    */
   async getUserById(userId) {
@@ -117,7 +118,7 @@ class User extends Model {
    * @param { string } password
    * @param { string } username
    * @returns { {id : number, login: string, user_name: string,
-   * state: number, created_at:Date, modified_at:Date} }
+   * avatar: string, state: number, created_at:Date, modified_at:Date} }
    */
   async newUser(login, password, username) {
     const minLength = 6;
@@ -144,14 +145,19 @@ class User extends Model {
         }
       }
       const hashPassword = await bcrypt.hash(password, SALT);
-
-      const /**@type { {id : number, login: string, user_name: string,
-         * state: number, created_at:Date, modified_at:Date} } */ user =
-          await this.insert(
-            // eslint-disable-next-line camelcase
-            { login, password: hashPassword, user_name: username, state: 0 },
-            USER_COLUMNS_SET
-          );
+      /**@type { {id : number, login: string, user_name: string,
+       * avatar: string, state: number, created_at:Date, modified_at:Date} } */
+      const user = await this.insert(
+        // eslint-disable-next-line camelcase
+        {
+          login,
+          password: hashPassword,
+          user_name: username,
+          state: 0,
+          avatar: DEFAULT_AVATAR,
+        },
+        USER_COLUMNS_SET
+      );
       return user;
     } catch (error) {
       if (!error.type) {
@@ -170,7 +176,7 @@ class User extends Model {
    * з якими у користувача userId відсутні чати(кімнати)
    * @param { number } userId
    * @returns { Promise<[{id : number, login: string, user_name: string,
-   * state: number, created_at:Date, modified_at:Date}]> }
+   * avatar: string, state: number, created_at:Date, modified_at:Date}]> }
    */
   async getContacts(userId) {
     try {

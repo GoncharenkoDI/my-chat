@@ -35,7 +35,7 @@ async function authentication(req, res, next) {
 /** використовується для отримання інф. про користувача
  * @param { number } id ідентифікатор користувача
  * @returns { Promise<{id : number, login: string, user_name: string,
- * state: number, created_at:Date, modified_at:Date} | null> }
+ * avatar: string; state: number, created_at:Date, modified_at:Date} | null> }
  */
 async function deserializeUser(id) {
   console.log('deserializeUser');

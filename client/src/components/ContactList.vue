@@ -6,15 +6,16 @@
     <div class="contact-list">
       <p v-if="contactsCount === 0">Доступні контакти відсутні</p>
       <div v-else class="contacts">
-        <p
+        <div
           v-for="contact in contacts"
           :key="contact.id"
           class="contact"
           :class="{ active: isActiveContact(contact.id) }"
           @click.prevent="setActiveContact(contact.id)"
         >
-          {{ contact.user_name }}
-        </p>
+          <img :src="`avatars/${contact.avatar}`" alt="А" />
+          <p>{{ contact.user_name }}</p>
+        </div>
       </div>
     </div>
   </div>

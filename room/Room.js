@@ -1,10 +1,17 @@
 'use strict';
 const db = require('../db/index');
 const Model = require('../db/Model');
+const USER_ROOM_COLUMNS = [
+  'room_id',
+  'member',
+  'room_name',
+  'avatar',
+  'created_at',
+  'modified_at',
+];
 
 class Room extends Model {
   /**
-   *
    * @param { PoolClient } client
    */
   constructor(client) {
@@ -33,15 +40,12 @@ class Room extends Model {
   /** Пошук кімнат в БД
    * @param { {key: value} } params
    * @returns {Promise<[{room_id : string, member: number, room_name: string,
-   * created_at:Date, modified_at:Date}]>} перелік кімнат
+   * avatar: string, created_at:Date, modified_at:Date}]>} перелік кімнат
    */
   async findRooms(params) {
     console.log('Room findRooms');
     try {
-      const rooms = await this.find(
-        ['room_id', 'member', 'room_name', 'created_at', 'modified_at'],
-        params
-      );
+      const rooms = await this.find(USER_ROOM_COLUMNS, params);
       return rooms;
     } catch (error) {
       if (!error.type) {
@@ -58,7 +62,7 @@ class Room extends Model {
   /** перелік кімнат, в яких зареєстрований користувач
    * @param { number } userId
    * @returns Promise<[{room_id : string, member: number, room_name: string,
-   * created_at:Date, modified_at:Date}]>} перелік кімнат
+   * avatar: string, created_at:Date, modified_at:Date}]>} перелік кімнат
    */
   async findUserRooms(userId) {
     console.log('Room findUserRooms');
@@ -114,6 +118,7 @@ class Room extends Model {
           member: member.id,
           // eslint-disable-next-line camelcase
           room_name: member.name,
+          avatar: member.avatar,
         });
       });
       await this.client.query('COMMIT');

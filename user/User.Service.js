@@ -35,7 +35,7 @@ class UserService {
    * @param { string } loginName
    * @param { string } password
    * @returns { Promise<{id : number, login: string, user_name: string,
-   * state: number, created_at:Date, modified_at:Date} | false> } -
+   * avatar: string; state: number, created_at:Date, modified_at:Date} | false> } -
    *  повертає користувача, якщо він в БД
    * та пароль правильний
    */
@@ -64,7 +64,7 @@ class UserService {
   /** Користувач за його id
    * @param { number } userId
    * @returns { Promise<{id : number, login: string, user_name: string,
-   * state: number, created_at:Date, modified_at:Date}> Користувач
+   * avatar: string, state: number, created_at:Date, modified_at:Date}> Користувач
    */
   async getUser(userId) {
     try {

@@ -58,6 +58,10 @@ export default {
       const user = this.$store.state.user ? this.$store.state.user : {};
       return user.user_name ? user.user_name : '';
     },
+    avatarName() {
+      const user = this.$store.state.user ? this.$store.state.user : {};
+      return user.avatar ? user.avatar : '';
+    },
   },
   watch: {
     connectionError() {

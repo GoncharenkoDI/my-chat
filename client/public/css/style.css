@@ -24,6 +24,7 @@ html {
   overflow: hidden;
   margin: 0 auto;
   font-family: 'Source Sans Pro', sans-serif !important;
+  position: relative;
 }
 
 #main .wrapper {
@@ -32,6 +33,24 @@ html {
   height: 100%;
   width: 100%;
 }
+
+.profile-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  display:none;
+}
+
+.profile-container.active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
 
 .navbar {
   display: flex;
@@ -110,6 +129,8 @@ html {
   flex-direction: column;
   width: 42rem;
   font-size: 1.8rem;
+  background: #ffffff;
+  position: relative;
 }
 .card-header {
   padding: 1rem;
@@ -174,7 +195,7 @@ html {
     display: inline-block;
   }
 }
-.room {
+.room, .contact {
   padding: 2px;
   background: #e9ecef;
   margin-bottom: 8px;
@@ -186,13 +207,12 @@ html {
 }
 .user-info {
   padding: 2px;
-  cursor: pointer;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
 }
-.room.active {
+.room.active, .contact.active {
   background: #00a36c;
   color: #fff;
 }
@@ -201,27 +221,17 @@ html {
   display: block;
   width: 48px;
   height: 48px;
+  border-radius: 50%;
 }
-.user-info img {
+.user-info img, .contact img {
   display: block;
   width: 48px;
   height: 48px;
+  border-radius: 50%;
 }
 
-.room p {
+.room p, .contact p {
   margin-left: 15px;
-}
-
-.contact {
-  padding: 15px;
-  background: #e9ecef;
-  margin-bottom: 8px;
-  cursor: pointer;
-}
-
-.contact.active {
-  background: #00a36c;
-  color: #fff;
 }
 
 .chat-box-wrapper {

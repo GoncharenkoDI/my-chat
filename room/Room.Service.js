@@ -34,7 +34,7 @@ class RoomService {
   /** знаходить в БД кімнати, в яких зареєстрований користувач
    * @param { number } userId
    * @returns { Promise<[{room_id : string, member: number, room_name: string,
-   * created_at:Date, modified_at:Date}]> } - повертає перелік користувача
+   * avatar: string, created_at:Date, modified_at:Date}]> } - повертає перелік користувача
    */
   async findUserRooms(userId) {
     console.log('Room.Service findUserRooms');
@@ -56,7 +56,7 @@ class RoomService {
   /** Вибір користувачів кімнати з id = roomId
    * @param { string } roomId
    * @returns {Promise<[{room_id : string, member: number, room_name: string,
-   * created_at:Date, modified_at:Date}]>}
+   * avatar: string, created_at:Date, modified_at:Date}]>}
    */
   async findUserRoomsById(roomId) {
     try {

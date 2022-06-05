@@ -30,16 +30,17 @@ async function getUserRooms(userId) {
 
 /** Створення чата для двох користувачів
  * @param { number } memberId
- * @param { {} } owner
+ * @param { {id : number, login: string, user_name: string,
+ * avatar: string; state: number, created_at:Date, modified_at:Date} } owner
  * @returns {Promise<[{room_id : string, member: number, room_name: string,
- * created_at:Date, modified_at:Date}] | []>}
+ * avatar: string, created_at:Date, modified_at:Date}] | []>}
  */
 async function createPrivateChat(memberId, owner) {
   let roomService;
   try {
     roomService = await RoomService.createService();
     const sql = `select
-        id, login, user_name, state, created_at, modified_at
+        id, login, user_name, avatar, state, created_at, modified_at
       from public.users
       where id = $1`;
 
@@ -50,8 +51,11 @@ async function createPrivateChat(memberId, owner) {
       throw error;
     }
     const user = rows[0];
-    const member = { id: user.id, name: owner.user_name };
-    const members = [member, { id: owner.id, name: user.user_name }];
+    const member = { id: user.id, name: owner.user_name, avatar: owner.avatar };
+    const members = [
+      member,
+      { id: owner.id, name: user.user_name, avatar: user.avatar },
+    ];
     const roomId = await roomService.newRoom(members, 0, 0);
     const rooms = await roomService.findUserRoomsById(roomId);
     return rooms;

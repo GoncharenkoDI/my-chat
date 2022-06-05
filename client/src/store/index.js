@@ -40,7 +40,7 @@ export default new Vuex.Store({
     messages: [],
     contacts: [],
     connectionError: null,
-    alertShowTime: 0,
+    alertShowTime: 3000,
     alertMessages: [],
     alertId: 0,
   },

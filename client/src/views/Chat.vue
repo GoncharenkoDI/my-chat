@@ -9,7 +9,7 @@
           @click.native="changeLeftActive"
         />
       </div>
-      <div class="user-info">
+      <div class="user-info" @click="showProfile">
         <img :src="'avatars/' + avatarName" alt="Аватар" />
         <p>{{ userName }}</p>
       </div>
@@ -27,18 +27,21 @@
       <LeftSide :isActive="isActive" />
       <ChatBox />
     </div>
+    <profile :isActive="isShowProfile" @close="closeProfile" />
   </div>
 </template>
 
 <script>
 import ChatBox from '@/components/ChatBox.vue';
 import LeftSide from '@/components/LeftSide.vue';
-import AlertContainer from '../components/AlertContainer.vue';
+import AlertContainer from '@/components/AlertContainer.vue';
+import Profile from '@/components/Profile.vue';
 
 export default {
   data: () => ({
     isJoin: false,
     isActive: true,
+    isShowProfile: false,
   }),
   created() {},
 
@@ -60,7 +63,8 @@ export default {
       return user.user_name ? user.user_name : '';
     },
     avatarName() {
-      return 'avatar-icon-116137-1938.png';
+      const user = this.$store.state.user ? this.$store.state.user : {};
+      return user.avatar ? user.avatar : '';
     },
   },
   watch: {
@@ -94,8 +98,14 @@ export default {
         path: '/login',
       });
     },
+    closeProfile() {
+      this.isShowProfile = false;
+    },
+    showProfile() {
+      this.isShowProfile = true;
+    },
   },
-  components: { ChatBox, LeftSide, AlertContainer },
+  components: { ChatBox, LeftSide, AlertContainer, Profile },
 };
 </script>
 
@@ -110,6 +120,7 @@ export default {
   border: 1px solid #fff;
 }
 .user-info {
+  cursor: pointer;
   color: #fff;
 }
 </style>
