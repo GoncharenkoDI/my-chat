@@ -66,19 +66,41 @@ export default {
   methods: {
     uploadAvatar(event) {
       try {
-        const formData = new FormData();
+        //const formData = new FormData();
         const fileField = event.target;
 
         if (fileField.files && fileField.files.length > 0) {
-          formData.append('avatar', fileField.files[0]);
-          console.dir(fileField.files[0]);
-          this.avatar = fileField.value;
+          //formData.append('avatar', fileField.files[0]);
+          const reader = new FileReader();
+          if (!reader) {
+            throw new Error('Браузер не підтримує читання файлів');
+          }
+          const file = fileField.files[0];
+          const fileSize = file.size;
+          if (fileSize > 10240) {
+            throw new Error('Розмір файлу не повинен перевищувати 10к.');
+          }
+
+          reader.onload = () => {
+            console.log(reader.result.toString());
+          };
+          reader.onerror = () => {
+            throw reader.error;
+          };
+          reader.readAsArrayBuffer(file);
+          //console.dir(fileField.files[0]);
+          //this.avatar = fileField.value;
           //fileField.value = '';
         } else {
           this.avatar = '';
         }
       } catch (error) {
         console.log('upload avatar error: ', error);
+        this.$store.dispatch('addAlertMessage', {
+          text: error.message,
+          type: 'danger',
+          caption: 'upload avatar error',
+        });
       }
     },
     submitForm() {
