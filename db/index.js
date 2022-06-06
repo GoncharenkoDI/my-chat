@@ -34,6 +34,7 @@ module.exports = {
    */
   async query(sql, params) {
     try {
+      console.dir({ sql, params });
       const result = await pool.query(sql, params);
       return result;
     } catch (error) {
@@ -75,6 +76,7 @@ module.exports = {
    */
   async clientQuery(client, sql, params) {
     try {
+      console.dir({ sql, params });
       const result = await client.query(sql, params);
       return result;
     } catch (error) {

@@ -39,7 +39,6 @@ class Model {
         `SELECT ${columns.join()} FROM ${this.table}` +
         ` WHERE ${whereColumns.join(' AND ')}` +
         `${orders.length !== 0 ? 'ORDER BY ' + orders.join() : ''}`;
-      console.dir({ sql, params });
       const { rows } = await db.clientQuery(this.client, sql, whereValues);
       return rows;
     } catch (error) {
