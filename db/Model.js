@@ -133,6 +133,38 @@ class Model {
 
   /**
    *
+   * @param { { key: value } } columns
+   * @param { { key: value } } params
+   * @returns
+   */
+  async update(columns, params) {
+    try {
+      const columnsName = Object.keys(columns).map(
+        (c, i) => c + ' = $' + (i + 1)
+      );
+      const values = Object.values(columns);
+      const columnsCount = columnsName.length;
+      const whereColumns = Object.keys(params).map(
+        (c, i) => c + ' = $' + (i + columnsCount + 1)
+      );
+      const whereValues = Object.values(params);
+      const sql = `UPDATE ${this.table} SET ${columnsName.join()}
+        WHERE ${whereColumns.join(' AND ')}`;
+      const { rowCount } = await db.clientQuery(this.client, sql, values);
+      return rowCount;
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'Model update';
+        console.log(error);
+      }
+      throw error;
+    }
+  }
+  /**
+   *
    * @param { string } sql текст запиту
    * @param { [{ key: value }] } params параметри запиту
    * @returns { Promise<pg.Result> } результат виконання запиту

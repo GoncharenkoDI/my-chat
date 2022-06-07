@@ -196,5 +196,7 @@ class User extends Model {
       throw error;
     }
   }
+
+  async updateUser(userId, updateData) {}
 }
 module.exports = User;

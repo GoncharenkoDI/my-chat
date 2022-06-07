@@ -359,7 +359,7 @@ io.on('connect', async (socket) => {
           `u${userId}t${now}.png`
         );
         await fs.writeFile(avatarFileName, data.avatar);
-        updateData['avatar'] = avatarFileName;
+        updateData['avatar'] = `u${userId}t${now}.png`;
       }
       console.dir(updateData);
     });
