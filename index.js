@@ -2,6 +2,7 @@
 require('dotenv').config();
 console.log(process.env.NODE_ENV);
 const path = require('path');
+const fs = require('fs').promises;
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -343,6 +344,24 @@ io.on('connect', async (socket) => {
         }
         emit('server error', error);
       }
+    });
+
+    socket.on('update user', async (data) => {
+      const updateData = {
+        user_name: data.userName,
+      };
+      const userId = user.id;
+      if (data.avatar) {
+        const now = new Date().getTime();
+        const avatarFileName = path.resolve(
+          PUBLIC_PATH,
+          'avatars',
+          `u${userId}t${now}.png`
+        );
+        await fs.writeFile(avatarFileName, data.avatar);
+        updateData['avatar'] = avatarFileName;
+      }
+      console.dir(updateData);
     });
   } catch (error) {
     if (!error.type) {

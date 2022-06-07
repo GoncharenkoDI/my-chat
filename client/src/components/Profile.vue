@@ -24,6 +24,7 @@
               id="avatar-file"
               accept="image/png"
               @change="uploadAvatar($event)"
+              ref="avatar-file"
             />
           </div>
         </div>
@@ -42,12 +43,14 @@
 </template>
 
 <script>
+import { promiseReadAsArrayBuffer } from '../util/promiseFileReader.js';
 export default {
   name: 'Profile',
   props: ['isActive'],
   data: () => ({
     avatar: '',
     userName: '',
+    file: null,
   }),
   computed: {
     avatarFileName() {
@@ -68,29 +71,16 @@ export default {
       try {
         //const formData = new FormData();
         const fileField = event.target;
-
         if (fileField.files && fileField.files.length > 0) {
           //formData.append('avatar', fileField.files[0]);
-          const reader = new FileReader();
-          if (!reader) {
-            throw new Error('Браузер не підтримує читання файлів');
-          }
+
           const file = fileField.files[0];
           const fileSize = file.size;
           if (fileSize > 10240) {
             throw new Error('Розмір файлу не повинен перевищувати 10к.');
           }
-
-          reader.onload = () => {
-            console.log(reader.result.toString());
-          };
-          reader.onerror = () => {
-            throw reader.error;
-          };
-          reader.readAsArrayBuffer(file);
-          //console.dir(fileField.files[0]);
-          //this.avatar = fileField.value;
-          //fileField.value = '';
+          this.avatar = file.name;
+          this.file = file;
         } else {
           this.avatar = '';
         }
@@ -103,13 +93,35 @@ export default {
         });
       }
     },
-    submitForm() {
-      console.log('submit form');
-      this.closeForm();
+    async submitForm() {
+      const data = {
+        userName: this.userName,
+      };
+      const socket = this.$store.state.socket;
+      try {
+        if (!socket || !socket.connected) {
+          throw new Error("відсутнє з'єднання.");
+        }
+        if (this.file) {
+          data.avatar = await promiseReadAsArrayBuffer(this.file);
+        }
+        //console.dir(data);
+        socket.emit('update user', data);
+      } catch (error) {
+        console.log('submit form error: ', error);
+        this.$store.dispatch('addAlertMessage', {
+          text: error.message,
+          type: 'danger',
+          caption: 'submit form error',
+        });
+      }
     },
     closeForm() {
       this.userName = '';
       this.avatar = '';
+      this.file = null;
+      console.log(this.$refs);
+      this.$refs['avatar-file'].value = '';
       this.$emit('close');
     },
   },

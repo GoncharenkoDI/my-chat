@@ -14,7 +14,7 @@ import {
   onConnectError,
   onDisconnect,
   onServerError,
-} from './eventHandlers.js';
+} from '../util/eventHandlers.js';
 
 Vue.use(Vuex);
 
