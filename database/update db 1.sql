@@ -2,7 +2,7 @@ ALTER TABLE IF EXISTS public.users
     ADD COLUMN avatar character varying(128) COLLATE pg_catalog."default";
 ALTER TABLE IF EXISTS public.room_users
     ADD COLUMN avatar character varying(128) COLLATE pg_catalog."default";
-
+DROP VIEW public.contacts;
 CREATE OR REPLACE VIEW public.contacts
  AS
  SELECT u.id AS owner,
