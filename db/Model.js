@@ -1,4 +1,3 @@
-'use strict';
 const db = require('./index');
 
 /**
@@ -131,11 +130,10 @@ class Model {
     }
   }
 
-  /**
-   *
+  /** Повертає кількість рядків змінених в таблиці
    * @param { { key: value } } columns
    * @param { { key: value } } params
-   * @returns
+   * @returns { Promise<number> }
    */
   async update(columns, params) {
     try {
@@ -150,7 +148,8 @@ class Model {
       const whereValues = Object.values(params);
       const sql = `UPDATE ${this.table} SET ${columnsName.join()}
         WHERE ${whereColumns.join(' AND ')}`;
-      const { rowCount } = await db.clientQuery(this.client, sql, values);
+      const sqpParams = [...values, ...whereValues];
+      const { rowCount } = await db.clientQuery(this.client, sql, sqpParams);
       return rowCount;
     } catch (error) {
       if (!error.type) {

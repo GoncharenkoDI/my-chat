@@ -1,4 +1,3 @@
-'use strict';
 const User = require('./User');
 
 class UserService {
@@ -35,9 +34,8 @@ class UserService {
    * @param { string } loginName
    * @param { string } password
    * @returns { Promise<{id : number, login: string, user_name: string,
-   * avatar: string; state: number, created_at:Date, modified_at:Date} | false> } -
-   *  повертає користувача, якщо він в БД
-   * та пароль правильний
+   *   avatar: string; state: number, created_at:Date,
+   *   modified_at:Date} | false> }
    */
   async checkUser(loginName, password) {
     try {
@@ -64,7 +62,8 @@ class UserService {
   /** Користувач за його id
    * @param { number } userId
    * @returns { Promise<{id : number, login: string, user_name: string,
-   * avatar: string, state: number, created_at:Date, modified_at:Date}> Користувач
+   *   avatar: string, state: number, created_at:Date, modified_at:Date
+   * }>
    */
   async getUser(userId) {
     try {
@@ -105,8 +104,7 @@ class UserService {
     }
   }
 
-  /**
-   * повертає перелік користувачів, з якими у користувача userId
+  /** повертає перелік користувачів, з якими у користувача userId
    * відсутні чати(кімнати)
    * @param { number } userId
    * @returns { Promise<[{id : number, login: string, user_name: string,
@@ -127,6 +125,29 @@ class UserService {
     }
   }
 
+  /** Повертає кількість змінених рядків в таблиці public.users
+   * повинно бути 1
+   * @param { number} userId
+   * @param {{ key: value }} updateData
+   * @returns { Promise<boolean> }
+   */
+  async updateUser(userId, updateData) {
+    try {
+      const rowCount = await this.model.updateUser(userId, updateData);
+      if (rowCount !== 1) {
+        throw new Error('Помилка внесення змін в таблицю.');
+      }
+      return true;
+    } catch (error) {
+      if (!error.type) {
+        error.type = 'check params';
+      }
+      if (!error.source) {
+        error.source = 'User.Service updateUser';
+      }
+      throw error;
+    }
+  }
   release() {
     this.model.release();
   }

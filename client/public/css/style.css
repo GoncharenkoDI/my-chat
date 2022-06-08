@@ -196,7 +196,7 @@ html {
   }
 }
 .room, .contact {
-  padding: 2px;
+  padding: 8px;
   background: #e9ecef;
   margin-bottom: 8px;
   cursor: pointer;
@@ -206,7 +206,7 @@ html {
   align-items: center;
 }
 .user-info {
-  padding: 2px;
+  padding: 8px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -217,20 +217,14 @@ html {
   color: #fff;
 }
 
-.room img {
+.room img, .user-info img, .contact img {
   display: block;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-}
-.user-info img, .contact img {
-  display: block;
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
 }
 
-.room p, .contact p {
+.room p, .contact p, .user-info p {
   margin-left: 15px;
 }
 

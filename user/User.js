@@ -1,4 +1,3 @@
-'use strict';
 require('dotenv').config();
 const db = require('../db/index');
 const Model = require('../db/Model');
@@ -140,7 +139,8 @@ class User extends Model {
           throw error;
         }
         if (username.length < 1) {
-          error.message = `Ім'я користувача повинено бути заповнене.`;
+          // eslint-disable-next-line quotes
+          error.message = `Ім'я користувача повинно бути заповнене.`;
           throw error;
         }
       }
@@ -152,6 +152,7 @@ class User extends Model {
         {
           login,
           password: hashPassword,
+          // eslint-disable-next-line camelcase
           user_name: username,
           state: 0,
           avatar: DEFAULT_AVATAR,
@@ -171,8 +172,7 @@ class User extends Model {
     }
   }
 
-  /**
-   * повертає перелік користувачів,
+  /** повертає перелік користувачів,
    * з якими у користувача userId відсутні чати(кімнати)
    * @param { number } userId
    * @returns { Promise<[{id : number, login: string, user_name: string,
@@ -197,6 +197,46 @@ class User extends Model {
     }
   }
 
-  async updateUser(userId, updateData) {}
+  /** Повертає кількість змінених рядків в таблиці public.users
+   * повинно бути 1
+   * @param { number} userId
+   * @param {{ key: value }} updateData
+   * @returns { Promise<number>}
+   */
+  async updateUser(userId, updateData) {
+    try {
+      await this.client.query('BEGIN');
+      const rowCount = await this.update(updateData, { id: userId });
+      const roomUserData = {};
+      if (updateData['avatar']) roomUserData['avatar'] = updateData['avatar'];
+      if (updateData['user_name']) {
+        roomUserData['room_name'] = updateData['user_name'];
+      }
+      if (Object.keys(roomUserData).length !== 0) {
+        const roomUserSet = Object.keys(roomUserData).map(
+          (c, i) => c + ' = $' + (i + 1)
+        );
+        const romUserValue = Object.values(roomUserData);
+        const sql = `update public.room_users set ${roomUserSet.join()}
+          where id in (
+            select member_ru_id from  public.room_members
+            where owner = $${roomUserSet.length + 1}
+          )`;
+        await this.query(sql, [...romUserValue, userId]);
+      }
+      await this.client.query('COMMIT');
+      return rowCount;
+    } catch (error) {
+      await this.client.query('ROLLBACK');
+      if (!error.type) {
+        error.type = 'server error';
+      }
+      if (!error.source) {
+        error.source = 'User updateUser';
+        console.log(error);
+      }
+      throw error;
+    }
+  }
 }
 module.exports = User;

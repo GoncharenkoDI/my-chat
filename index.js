@@ -1,4 +1,3 @@
-'use strict';
 require('dotenv').config();
 console.log(process.env.NODE_ENV);
 const path = require('path');
@@ -56,7 +55,7 @@ const {
 } = require('./auth');
 const { getUserRooms, createPrivateChat } = require('./room');
 const { getMessagesInRoom, addMessage } = require('./message');
-const { getContacts } = require('./user');
+const { getContacts, updateUser, getUser } = require('./user');
 
 app.use(bodyParser.json({}));
 
@@ -140,7 +139,7 @@ io.on('connect', async (socket) => {
      * @type {{id : number, login: string, user_name: string,
      * avatar: string; state: number, created_at:Date, modified_at:Date}}
      */
-    const user = socket.request.user;
+    let user = socket.request.user;
 
     if (!user) {
       console.log('not user');
@@ -348,6 +347,7 @@ io.on('connect', async (socket) => {
 
     socket.on('update user', async (data) => {
       const updateData = {
+        // eslint-disable-next-line camelcase
         user_name: data.userName,
       };
       const userId = user.id;
@@ -361,7 +361,9 @@ io.on('connect', async (socket) => {
         await fs.writeFile(avatarFileName, data.avatar);
         updateData['avatar'] = `u${userId}t${now}.png`;
       }
-      console.dir(updateData);
+      await updateUser(user.id, updateData);
+      user = await getUser(userId);
+      socket.emit('user', user);
     });
   } catch (error) {
     if (!error.type) {

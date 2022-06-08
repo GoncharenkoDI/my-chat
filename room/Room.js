@@ -1,4 +1,3 @@
-'use strict';
 const db = require('../db/index');
 const Model = require('../db/Model');
 const USER_ROOM_COLUMNS = [
