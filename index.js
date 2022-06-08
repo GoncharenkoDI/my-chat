@@ -346,24 +346,35 @@ io.on('connect', async (socket) => {
     });
 
     socket.on('update user', async (data) => {
-      const updateData = {
-        // eslint-disable-next-line camelcase
-        user_name: data.userName,
-      };
-      const userId = user.id;
-      if (data.avatar) {
-        const now = new Date().getTime();
-        const avatarFileName = path.resolve(
-          PUBLIC_PATH,
-          'avatars',
-          `u${userId}t${now}.png`
-        );
-        await fs.writeFile(avatarFileName, data.avatar);
-        updateData['avatar'] = `u${userId}t${now}.png`;
+      try {
+        const updateData = {
+          // eslint-disable-next-line camelcase
+          user_name: data.userName,
+        };
+        const userId = user.id;
+        if (data.avatar) {
+          const now = new Date().getTime();
+          const avatarFileName = path.resolve(
+            PUBLIC_PATH,
+            'avatars',
+            `u${userId}t${now}.png`
+          );
+          await fs.writeFile(avatarFileName, data.avatar);
+          updateData['avatar'] = `u${userId}t${now}.png`;
+        }
+        await updateUser(user.id, updateData);
+        user = await getUser(userId);
+        socket.emit('user', user);
+      } catch (error) {
+        if (!error.type) {
+          error.type = 'server error';
+        }
+        if (!error.source) {
+          error.source = 'index on update user';
+          console.log(error);
+        }
+        emit('server error', error);
       }
-      await updateUser(user.id, updateData);
-      user = await getUser(userId);
-      socket.emit('user', user);
     });
   } catch (error) {
     if (!error.type) {

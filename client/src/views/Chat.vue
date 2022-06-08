@@ -10,7 +10,7 @@
         />
       </div>
       <div class="user-info" @click="showProfile">
-        <img :src="'avatars/' + avatarName" alt="Аватар" />
+        <img :src="'avatars/' + avatarName" alt="А" />
         <p>{{ userName }}</p>
       </div>
       <div>

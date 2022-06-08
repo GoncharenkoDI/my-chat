@@ -107,6 +107,7 @@ export default {
         }
         //console.dir(data);
         socket.emit('update user', data);
+        this.closeForm();
       } catch (error) {
         console.log('submit form error: ', error);
         this.$store.dispatch('addAlertMessage', {
@@ -117,10 +118,8 @@ export default {
       }
     },
     closeForm() {
-      this.userName = '';
       this.avatar = '';
       this.file = null;
-      console.log(this.$refs);
       this.$refs['avatar-file'].value = '';
       this.$emit('close');
     },
