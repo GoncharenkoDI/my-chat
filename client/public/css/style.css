@@ -194,6 +194,9 @@ html {
   #active-switch {
     display: inline-block;
   }
+  .profile-container {
+    z-index: 1100;
+  }
 }
 .room, .contact {
   padding: 8px;
