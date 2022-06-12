@@ -158,6 +158,11 @@ async function authUserHandler(req, res) {
 async function logoutHandler(req, res) {
   // можливо треба прочитати сесію з запиту та для неї встановити кінець
   res.cookie('connect.sid', '', { expires: new Date() });
+  try {
+    if (req.session) await req.session.destroy();
+  } catch (error) {
+    console.log(error);
+  }
   res.json(true);
   return;
 }

@@ -26,30 +26,8 @@ module.exports = {
   getPool() {
     return pool;
   },
-  /** повертає результат виконання sql
-   * @param { String } sql
-   * @param { Array } params
-   * @returns { Promise<PgResult> }
-   */
-  async query(sql, params) {
-    try {
-      console.dir({ sql, params });
-      const result = await pool.query(sql, params);
-      return result;
-    } catch (error) {
-      if (!error.type) {
-        error.type = 'db error';
-      }
-      if (!error.source) {
-        error.source = 'db index query';
-        console.log(error);
-      }
-      throw error;
-    }
-  },
-
   /** повертає нового клієнта з пула
-   * @returns { Promise< PoolClient >}
+   * @returns { Promise< pg.Client >}
    */
   async getClient() {
     try {
@@ -68,10 +46,10 @@ module.exports = {
   },
 
   /** виконує SQL запит з вказаним клієнтом
-   * @param { PoolClient } client
+   * @param { pg.Client } client
    * @param { String } sql
-   * @param {Array} params
-   * @returns  { Promise<any> } повертає результат виконання sql
+   * @param {Array<mixed>} params
+   * @returns  { Promise<pg.Result> } повертає результат виконання sql
    */
   async clientQuery(client, sql, params) {
     try {

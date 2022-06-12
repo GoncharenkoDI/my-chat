@@ -34,11 +34,11 @@ class User extends Model {
     }
   }
 
-  /** користувач за його логіном
+  /** користувач за параметрами (наприклад за логіном)
    * @param { {key: value} } params
    * @returns {Promise<{id : number, login: string, user_name: string,
    * avatar: string, state: number, created_at:Date, modified_at:Date}>
-   * } користувач за його логіном
+   * }
    */
   async findUser(params) {
     try {
