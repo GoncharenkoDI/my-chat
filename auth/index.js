@@ -1,4 +1,3 @@
-'use strict';
 const UserService = require('../user/User.Service');
 
 /** записує в req.usr користувача, якщо в сесії знаходить збережений userId

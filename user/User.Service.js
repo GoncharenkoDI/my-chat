@@ -85,13 +85,17 @@ class UserService {
       const candidate = await this.model.findUser({
         login: login.toLowerCase(),
       });
-      if (Object.keys(candidate).length !== 0) return false;
+      if (Object.keys(candidate).length !== 0) {
+        throw new Error('Користувач з вказаним логіном вже існує.');
+      }
       const user = await this.model.newUser(
         login.toLowerCase(),
         password,
         username
       );
-      if (Object.keys(user).length === 0) return false;
+      if (Object.keys(user).length === 0) {
+        return false;
+      }
       return user;
     } catch (error) {
       if (!error.type) {

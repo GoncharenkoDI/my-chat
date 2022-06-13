@@ -85,8 +85,7 @@ class User extends Model {
    * @param { number } userId - ідентифікатор користувача,
    *  для якого перевіряється пароль
    * @param { string } verifiedPassword - пароль для перевірки
-   * @returns { Promise<boolean> } проміс,
-   * який буде вирішений як результат порівняння * із збереженим в БД паролем
+   * @returns { Promise<boolean> }
    */
   async verifyPassword(userId, verifiedPassword) {
     try {
@@ -116,8 +115,8 @@ class User extends Model {
    * @param { string } login
    * @param { string } password
    * @param { string } username
-   * @returns { {id : number, login: string, user_name: string,
-   * avatar: string, state: number, created_at:Date, modified_at:Date} }
+   * @returns { Promise<{id : number, login: string, user_name: string,
+   * avatar: string, state: number, created_at:Date, modified_at:Date}> }
    */
   async newUser(login, password, username) {
     const minLength = 6;

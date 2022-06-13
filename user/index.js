@@ -1,4 +1,3 @@
-const { getUserRooms } = require('../room');
 const UserService = require('./User.Service');
 
 /**
