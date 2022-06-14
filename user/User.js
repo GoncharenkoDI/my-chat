@@ -216,7 +216,8 @@ class User extends Model {
           (c, i) => c + ' = $' + (i + 1)
         );
         const romUserValue = Object.values(roomUserData);
-        const sql = `update public.room_users set ${roomUserSet.join()}
+        const sql = `update public.room_users set
+          modified_at = CURRENT_TIMESTAMP, ${roomUserSet.join()}
           where id in (
             select member_ru_id from  public.room_members
             where owner = $${roomUserSet.length + 1}

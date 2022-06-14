@@ -1,4 +1,3 @@
-'use strict';
 const db = require('../db/index');
 const Model = require('../db/Model');
 
@@ -26,7 +25,7 @@ class Message extends Model {
     }
   }
 
-  /** Повідомленя, зареєстровані в кімнаті roomId
+  /** Повідомлення, зареєстровані в кімнаті roomId
    * @param { string } roomId
    * @returns { Promise<[{
    *   id : number,
@@ -40,7 +39,8 @@ class Message extends Model {
   async getMessagesInRoom(roomId) {
     try {
       const sql = `select
-        m.id, m.destination, m.author, u.user_name, m.text, m.created_at, m.modified_at
+        m.id, m.destination, m.author, u.user_name, m.text, m.created_at,
+        m.modified_at
       from
         public.messages m
         inner join public.users u on m.author = u.id
