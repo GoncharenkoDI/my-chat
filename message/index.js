@@ -1,4 +1,3 @@
-'use strict';
 const MessageService = require('./Message.Service');
 
 /**

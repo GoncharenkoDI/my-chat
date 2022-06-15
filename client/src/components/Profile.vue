@@ -105,7 +105,6 @@ export default {
         if (this.file) {
           data.avatar = await promiseReadAsArrayBuffer(this.file);
         }
-        //console.dir(data);
         socket.emit('update user', data);
         this.closeForm();
       } catch (error) {
@@ -118,6 +117,7 @@ export default {
       }
     },
     closeForm() {
+      console.error('close form');
       this.avatar = '';
       this.file = null;
       this.$refs['avatar-file'].value = '';
