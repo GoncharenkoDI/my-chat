@@ -2,37 +2,12 @@ require('dotenv').config();
 console.log(process.env.NODE_ENV);
 const path = require('path');
 const express = require('express');
-//const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
 
 const server = require('http').createServer(app);
 
-//const serverConfig = require('./config/server.config');
-//const dbConfig = require('./config/db.config');
-
-//const PUBLIC = path.resolve(__dirname, serverConfig.PUBLIC);
-// const PORT = serverConfig.PORT;
-// console.dir({
-//   public: PUBLIC,
-//   env: path.resolve(__dirname, process.env.CHAT_PUBLIC),
-// });
-//const PUBLIC = path.resolve(__dirname, process.env.PUBLIC);
-//const PORT = process.env.PORT;
-//const { SESSION_MAX_AGE, SESSION_SECRET } = require('./config/secret.config');
-
-/*
-DATABASE_URL="postgresql://honcharenko:241100@localhost:5432/vue-chat"
-PORT=8080
-PUBLIC_PATH="./client/dist"
-SECRET= "Ну дуже секретне слово"
-SALT= 12
-EXPIRED_INTERVAL= 2592000000
-MAX_SESSIONS= 5
-SESSION_SECRET= "Ще секретніше слово"
-SESSION_EXPIRES= 86400000
-*/
 const {
   PORT = 5000,
   PUBLIC_PATH = './client/dist',
@@ -52,17 +27,14 @@ const {
   registerHandler,
 } = require('./auth');
 const { getUserRooms } = require('./room');
-
 const { setHandlers } = require('./handlers');
 
 app.use(bodyParser.json({}));
 
 const expressSession = require('express-session');
 const { getPool } = require('./db');
-const { emit } = require('process');
 const pool = getPool();
 const maxAge = +SESSION_EXPIRES;
-console.log({ maxAge });
 const session = expressSession({
   store: new (require('connect-pg-simple')(expressSession))({
     pool,
@@ -75,8 +47,6 @@ const session = expressSession({
 
 app.use(session);
 
-//app.use(cors());
-
 app.use(authentication);
 
 app.post('/api/login', loginHandler);
@@ -85,11 +55,7 @@ app.get('*', (req, res) => {
   res.redirect('/');
 });
 
-const io = require('socket.io')(server, {
-  // cors: {
-  //   origin: 'http://localhost:8080',
-  // },
-});
+const io = require('socket.io')(server, {});
 
 app.post('/api/logout', (req, res) => {
   const socketId = req.session.socketId;
@@ -168,7 +134,7 @@ io.on('connect', async (socket) => {
       error.source = 'index on connect';
       console.log(error);
     }
-    emit('server error', error);
+    socket.emit('server error', error);
   }
 });
 
