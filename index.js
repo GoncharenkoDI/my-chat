@@ -34,7 +34,6 @@ app.use(bodyParser.json({}));
 const expressSession = require('express-session');
 const { getPool } = require('./db');
 const pool = getPool();
-const maxAge = +SESSION_EXPIRES;
 const session = expressSession({
   store: new (require('connect-pg-simple')(expressSession))({
     pool,
@@ -82,7 +81,6 @@ io.use((socket, next) => {
     next();
   } else {
     console.log('не авторизувався');
-    console.dir(socket.request.session);
     next(new Error('unauthorized'));
   }
 });
